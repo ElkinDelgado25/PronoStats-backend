@@ -9,6 +9,7 @@ BDD_CLOUD_SENTINEL = "BDD_CLOUD"
 LOCAL_DEV_DATABASE_URL = "sqlite:///./pronostats_dev.db"
 
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
