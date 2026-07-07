@@ -1,13 +1,14 @@
 import jwt
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.usuario import RolUsuario, Usuario
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+_bearer = HTTPBearer(auto_error=False)
 
 _cred_exc = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -16,9 +17,27 @@ _cred_exc = HTTPException(
 )
 
 
+def _extract_token(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None,
+) -> str | None:
+    token = request.cookies.get(settings.jwt_cookie_name)
+    if token:
+        return token
+    if credentials:
+        return credentials.credentials
+    return None
+
+
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+    db: Session = Depends(get_db),
 ) -> Usuario:
+    token = _extract_token(request, credentials)
+    if not token:
+        raise _cred_exc
+
     try:
         payload = decode_access_token(token)
         user_id = payload.get("sub")

@@ -23,7 +23,16 @@ class UsuarioOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AuthSessionOut(BaseModel):
+    """Respuesta de login/registro: el JWT viaja en cookie HttpOnly, no en el body."""
+
+    usuario: UsuarioOut
+    token_type: str = "cookie"
+
+
 class TokenOut(BaseModel):
+    """Solo para Swagger OAuth2 (login-form). En la app web se usa AuthSessionOut."""
+
     access_token: str
     token_type: str = "bearer"
     usuario: UsuarioOut

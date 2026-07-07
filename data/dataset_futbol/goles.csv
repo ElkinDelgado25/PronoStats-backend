@@ -1,0 +1,349 @@
+partido_id,liga,equipo_local_id,equipo_visitante_id,fecha,estado,goles_local,goles_visitante
+1,Liga Profesional,4,3,2026-02-08T08:52:55.873375+00:00,finalizado,6,6
+2,Liga Profesional,5,7,2026-02-09T15:52:55.873375+00:00,finalizado,5,2
+3,Liga Profesional,1,3,2026-02-10T11:52:55.873375+00:00,finalizado,5,5
+4,Liga Profesional,7,4,2026-02-11T17:52:55.873375+00:00,finalizado,1,0
+5,Liga Profesional,8,1,2026-02-12T08:52:55.873375+00:00,finalizado,4,4
+6,Liga Profesional,1,5,2026-02-13T10:52:55.873375+00:00,finalizado,3,3
+7,Liga Profesional,2,8,2026-02-14T14:52:55.873375+00:00,finalizado,3,2
+8,Liga Profesional,8,3,2026-02-15T09:52:55.873375+00:00,finalizado,2,4
+9,Liga Profesional,8,4,2026-02-16T10:52:55.873375+00:00,finalizado,5,4
+10,Liga Profesional,1,6,2026-02-17T14:52:55.873375+00:00,finalizado,2,2
+11,Liga Profesional,7,6,2026-02-18T08:52:55.873375+00:00,finalizado,5,2
+12,Liga Profesional,4,5,2026-02-19T15:52:55.873375+00:00,finalizado,2,4
+13,Liga Profesional,3,7,2026-02-20T17:52:55.873375+00:00,finalizado,2,1
+14,Liga Profesional,7,2,2026-02-21T11:52:55.873375+00:00,finalizado,2,2
+15,Liga Profesional,7,3,2026-02-22T10:52:55.873375+00:00,finalizado,1,1
+16,Liga Profesional,4,2,2026-02-23T08:52:55.873375+00:00,finalizado,0,4
+17,Liga Profesional,2,4,2026-02-24T10:52:55.873375+00:00,finalizado,2,2
+18,Liga Profesional,3,5,2026-02-25T12:52:55.873375+00:00,finalizado,2,0
+19,Liga Profesional,5,3,2026-02-26T16:52:55.873375+00:00,finalizado,1,4
+20,Liga Profesional,5,2,2026-02-27T13:52:55.873375+00:00,finalizado,1,6
+21,Liga Profesional,1,4,2026-02-28T17:52:55.873375+00:00,finalizado,5,1
+22,Liga Profesional,8,6,2026-03-01T10:52:55.873375+00:00,finalizado,3,4
+23,Liga Profesional,3,4,2026-03-02T13:52:55.873375+00:00,finalizado,1,2
+24,Liga Profesional,4,8,2026-03-03T12:52:55.873375+00:00,finalizado,2,2
+25,Liga Profesional,4,6,2026-03-04T12:52:55.873375+00:00,finalizado,2,0
+26,Liga Profesional,2,6,2026-03-05T08:52:55.873375+00:00,finalizado,1,0
+27,Liga Profesional,2,3,2026-03-06T17:52:55.873375+00:00,finalizado,1,4
+28,Liga Profesional,2,7,2026-03-07T09:52:55.873375+00:00,finalizado,0,3
+29,Liga Profesional,5,8,2026-03-08T13:52:55.873375+00:00,finalizado,6,2
+30,Liga Profesional,2,5,2026-03-09T13:52:55.873375+00:00,finalizado,3,3
+31,Liga Profesional,4,1,2026-03-10T08:52:55.873375+00:00,finalizado,1,2
+32,Liga Profesional,7,1,2026-03-11T17:52:55.873375+00:00,finalizado,1,2
+33,Liga Profesional,7,8,2026-03-12T08:52:55.873375+00:00,finalizado,1,4
+34,Liga Profesional,6,7,2026-03-13T12:52:55.873375+00:00,finalizado,4,1
+35,Liga Profesional,8,2,2026-03-14T10:52:55.873375+00:00,finalizado,3,1
+36,Liga Profesional,3,6,2026-03-15T08:52:55.873375+00:00,finalizado,4,3
+37,Liga Profesional,8,7,2026-03-16T10:52:55.873375+00:00,finalizado,2,1
+38,Liga Profesional,1,7,2026-03-17T13:52:55.873375+00:00,finalizado,6,1
+39,Liga Profesional,1,2,2026-03-18T15:52:55.873375+00:00,finalizado,5,1
+40,Liga Profesional,3,2,2026-03-19T09:52:55.873375+00:00,finalizado,6,2
+41,Liga Profesional,5,1,2026-03-20T14:52:55.873375+00:00,finalizado,1,3
+42,Liga Profesional,6,3,2026-03-21T14:52:55.873375+00:00,finalizado,4,1
+43,Liga Profesional,5,4,2026-03-22T17:52:55.873375+00:00,finalizado,1,0
+44,Liga Profesional,7,5,2026-03-23T14:52:55.873375+00:00,finalizado,3,1
+45,Liga Profesional,6,2,2026-03-24T16:52:55.873375+00:00,finalizado,2,4
+46,Liga Profesional,4,7,2026-03-25T10:52:55.873375+00:00,finalizado,1,1
+47,Liga Profesional,6,1,2026-03-26T08:52:55.873375+00:00,finalizado,0,1
+48,Liga Profesional,6,5,2026-03-27T11:52:55.873375+00:00,finalizado,1,2
+49,Liga Profesional,6,4,2026-03-28T13:52:55.873375+00:00,finalizado,2,4
+50,Liga Profesional,3,1,2026-03-29T09:52:55.873375+00:00,finalizado,3,4
+51,Liga Profesional,1,8,2026-03-30T15:52:55.873375+00:00,finalizado,4,2
+52,Liga Profesional,6,8,2026-03-31T13:52:55.873375+00:00,finalizado,1,2
+53,Liga Profesional,8,5,2026-04-01T13:52:55.873375+00:00,finalizado,4,3
+54,Liga Profesional,5,6,2026-04-02T09:52:55.873375+00:00,finalizado,4,3
+55,Liga Profesional,3,8,2026-04-03T09:52:55.873375+00:00,finalizado,3,2
+56,Liga Profesional,2,1,2026-04-04T08:52:55.873375+00:00,finalizado,6,3
+57,Brasileirao Serie A,14,10,2026-02-08T15:52:55.873375+00:00,finalizado,2,4
+58,Brasileirao Serie A,13,9,2026-02-09T13:52:55.873375+00:00,finalizado,3,1
+59,Brasileirao Serie A,15,13,2026-02-10T11:52:55.873375+00:00,finalizado,2,2
+60,Brasileirao Serie A,13,12,2026-02-11T13:52:55.873375+00:00,finalizado,6,6
+61,Brasileirao Serie A,16,9,2026-02-12T09:52:55.873375+00:00,finalizado,3,4
+62,Brasileirao Serie A,16,14,2026-02-13T16:52:55.873375+00:00,finalizado,2,1
+63,Brasileirao Serie A,12,14,2026-02-14T13:52:55.873375+00:00,finalizado,1,3
+64,Brasileirao Serie A,11,10,2026-02-15T10:52:55.873375+00:00,finalizado,4,2
+65,Brasileirao Serie A,10,15,2026-02-16T12:52:55.873375+00:00,finalizado,3,1
+66,Brasileirao Serie A,11,15,2026-02-17T10:52:55.873375+00:00,finalizado,2,2
+67,Brasileirao Serie A,15,10,2026-02-18T14:52:55.873375+00:00,finalizado,5,4
+68,Brasileirao Serie A,16,11,2026-02-19T08:52:55.873375+00:00,finalizado,1,1
+69,Brasileirao Serie A,10,14,2026-02-20T08:52:55.873375+00:00,finalizado,0,4
+70,Brasileirao Serie A,11,14,2026-02-21T11:52:55.873375+00:00,finalizado,1,4
+71,Brasileirao Serie A,16,12,2026-02-22T11:52:55.873375+00:00,finalizado,3,3
+72,Brasileirao Serie A,16,13,2026-02-23T09:52:55.873375+00:00,finalizado,5,2
+73,Brasileirao Serie A,10,12,2026-02-24T14:52:55.873375+00:00,finalizado,3,1
+74,Brasileirao Serie A,9,15,2026-02-25T08:52:55.873375+00:00,finalizado,0,5
+75,Brasileirao Serie A,12,16,2026-02-26T10:52:55.873375+00:00,finalizado,2,2
+76,Brasileirao Serie A,14,15,2026-02-27T09:52:55.873375+00:00,finalizado,5,2
+77,Brasileirao Serie A,15,14,2026-02-28T12:52:55.873375+00:00,finalizado,3,1
+78,Brasileirao Serie A,10,13,2026-03-01T16:52:55.873375+00:00,finalizado,1,0
+79,Brasileirao Serie A,9,14,2026-03-02T13:52:55.873375+00:00,finalizado,5,1
+80,Brasileirao Serie A,9,13,2026-03-03T16:52:55.873375+00:00,finalizado,1,0
+81,Brasileirao Serie A,15,9,2026-03-04T09:52:55.873375+00:00,finalizado,1,0
+82,Brasileirao Serie A,12,13,2026-03-05T11:52:55.873375+00:00,finalizado,5,3
+83,Brasileirao Serie A,13,16,2026-03-06T17:52:55.873375+00:00,finalizado,3,3
+84,Brasileirao Serie A,9,16,2026-03-07T10:52:55.873375+00:00,finalizado,3,2
+85,Brasileirao Serie A,12,10,2026-03-08T16:52:55.873375+00:00,finalizado,3,4
+86,Brasileirao Serie A,13,15,2026-03-09T10:52:55.873375+00:00,finalizado,1,1
+87,Brasileirao Serie A,15,16,2026-03-10T10:52:55.873375+00:00,finalizado,6,0
+88,Brasileirao Serie A,12,11,2026-03-11T16:52:55.873375+00:00,finalizado,2,2
+89,Brasileirao Serie A,14,12,2026-03-12T16:52:55.873375+00:00,finalizado,1,4
+90,Brasileirao Serie A,13,14,2026-03-13T15:52:55.873375+00:00,finalizado,1,3
+91,Brasileirao Serie A,13,10,2026-03-14T12:52:55.873375+00:00,finalizado,0,1
+92,Brasileirao Serie A,10,16,2026-03-15T16:52:55.873375+00:00,finalizado,1,2
+93,Brasileirao Serie A,9,11,2026-03-16T14:52:55.873375+00:00,finalizado,3,2
+94,Brasileirao Serie A,11,16,2026-03-17T17:52:55.873375+00:00,finalizado,2,1
+95,Brasileirao Serie A,16,15,2026-03-18T12:52:55.873375+00:00,finalizado,1,2
+96,Brasileirao Serie A,10,9,2026-03-19T10:52:55.873375+00:00,finalizado,3,0
+97,Brasileirao Serie A,11,9,2026-03-20T16:52:55.873375+00:00,finalizado,3,4
+98,Brasileirao Serie A,9,12,2026-03-21T17:52:55.873375+00:00,finalizado,1,3
+99,Brasileirao Serie A,9,10,2026-03-22T12:52:55.873375+00:00,finalizado,2,1
+100,Brasileirao Serie A,16,10,2026-03-23T12:52:55.873375+00:00,finalizado,2,3
+101,Brasileirao Serie A,15,12,2026-03-24T10:52:55.873375+00:00,finalizado,1,0
+102,Brasileirao Serie A,13,11,2026-03-25T10:52:55.873375+00:00,finalizado,3,4
+103,Brasileirao Serie A,12,15,2026-03-26T12:52:55.873375+00:00,finalizado,0,1
+104,Brasileirao Serie A,14,13,2026-03-27T09:52:55.873375+00:00,finalizado,0,4
+105,Brasileirao Serie A,14,16,2026-03-28T14:52:55.873375+00:00,finalizado,1,1
+106,Brasileirao Serie A,14,11,2026-03-29T09:52:55.873375+00:00,finalizado,4,4
+107,Brasileirao Serie A,12,9,2026-03-30T14:52:55.873375+00:00,finalizado,1,3
+108,Brasileirao Serie A,10,11,2026-03-31T13:52:55.873375+00:00,finalizado,2,2
+109,Brasileirao Serie A,11,12,2026-04-01T16:52:55.873375+00:00,finalizado,3,5
+110,Brasileirao Serie A,15,11,2026-04-02T14:52:55.873375+00:00,finalizado,3,2
+111,Brasileirao Serie A,14,9,2026-04-03T16:52:55.873375+00:00,finalizado,5,3
+112,Brasileirao Serie A,11,13,2026-04-04T16:52:55.873375+00:00,finalizado,6,3
+113,Liga MX,21,24,2026-02-08T11:52:55.873375+00:00,finalizado,1,0
+114,Liga MX,19,22,2026-02-09T16:52:55.873375+00:00,finalizado,1,1
+115,Liga MX,18,20,2026-02-10T15:52:55.873375+00:00,finalizado,3,4
+116,Liga MX,20,17,2026-02-11T10:52:55.873375+00:00,finalizado,1,0
+117,Liga MX,18,19,2026-02-12T10:52:55.873375+00:00,finalizado,1,3
+118,Liga MX,23,18,2026-02-13T12:52:55.873375+00:00,finalizado,0,1
+119,Liga MX,23,24,2026-02-14T17:52:55.873375+00:00,finalizado,4,3
+120,Liga MX,20,23,2026-02-15T16:52:55.873375+00:00,finalizado,2,2
+121,Liga MX,23,21,2026-02-16T17:52:55.873375+00:00,finalizado,1,0
+122,Liga MX,21,18,2026-02-17T10:52:55.873375+00:00,finalizado,2,4
+123,Liga MX,17,23,2026-02-18T13:52:55.873375+00:00,finalizado,3,4
+124,Liga MX,22,20,2026-02-19T09:52:55.873375+00:00,finalizado,2,3
+125,Liga MX,22,23,2026-02-20T13:52:55.873375+00:00,finalizado,6,0
+126,Liga MX,17,18,2026-02-21T17:52:55.873375+00:00,finalizado,2,2
+127,Liga MX,17,22,2026-02-22T13:52:55.873375+00:00,finalizado,0,3
+128,Liga MX,22,18,2026-02-23T11:52:55.873375+00:00,finalizado,4,1
+129,Liga MX,18,17,2026-02-24T16:52:55.873375+00:00,finalizado,4,1
+130,Liga MX,23,17,2026-02-25T09:52:55.873375+00:00,finalizado,1,2
+131,Liga MX,23,22,2026-02-26T16:52:55.873375+00:00,finalizado,2,3
+132,Liga MX,19,20,2026-02-27T12:52:55.873375+00:00,finalizado,4,3
+133,Liga MX,19,24,2026-02-28T15:52:55.873375+00:00,finalizado,3,1
+134,Liga MX,22,24,2026-03-01T09:52:55.873375+00:00,finalizado,4,0
+135,Liga MX,19,23,2026-03-02T13:52:55.873375+00:00,finalizado,3,1
+136,Liga MX,19,17,2026-03-03T13:52:55.873375+00:00,finalizado,2,2
+137,Liga MX,24,17,2026-03-04T11:52:55.873375+00:00,finalizado,1,3
+138,Liga MX,21,23,2026-03-05T11:52:55.873375+00:00,finalizado,1,3
+139,Liga MX,23,19,2026-03-06T09:52:55.873375+00:00,finalizado,3,1
+140,Liga MX,21,17,2026-03-07T16:52:55.873375+00:00,finalizado,3,6
+141,Liga MX,17,21,2026-03-08T08:52:55.873375+00:00,finalizado,0,3
+142,Liga MX,17,20,2026-03-09T14:52:55.873375+00:00,finalizado,2,4
+143,Liga MX,19,21,2026-03-10T08:52:55.873375+00:00,finalizado,0,1
+144,Liga MX,23,20,2026-03-11T13:52:55.873375+00:00,finalizado,4,1
+145,Liga MX,24,20,2026-03-12T17:52:55.873375+00:00,finalizado,2,4
+146,Liga MX,18,23,2026-03-13T13:52:55.873375+00:00,finalizado,1,4
+147,Liga MX,21,22,2026-03-14T08:52:55.873375+00:00,finalizado,4,6
+148,Liga MX,24,23,2026-03-15T14:52:55.873375+00:00,finalizado,1,1
+149,Liga MX,18,21,2026-03-16T11:52:55.873375+00:00,finalizado,4,1
+150,Liga MX,21,19,2026-03-17T08:52:55.873375+00:00,finalizado,1,1
+151,Liga MX,20,22,2026-03-18T12:52:55.873375+00:00,finalizado,3,4
+152,Liga MX,24,21,2026-03-19T15:52:55.873375+00:00,finalizado,4,5
+153,Liga MX,21,20,2026-03-20T11:52:55.873375+00:00,finalizado,2,4
+154,Liga MX,18,22,2026-03-21T15:52:55.873375+00:00,finalizado,2,3
+155,Liga MX,18,24,2026-03-22T09:52:55.873375+00:00,finalizado,1,3
+156,Liga MX,24,18,2026-03-23T14:52:55.873375+00:00,finalizado,3,1
+157,Liga MX,17,24,2026-03-24T08:52:55.873375+00:00,finalizado,4,1
+158,Liga MX,17,19,2026-03-25T12:52:55.873375+00:00,finalizado,2,5
+159,Liga MX,20,18,2026-03-26T10:52:55.873375+00:00,finalizado,3,4
+160,Liga MX,24,22,2026-03-27T14:52:55.873375+00:00,finalizado,1,0
+161,Liga MX,22,19,2026-03-28T08:52:55.873375+00:00,finalizado,4,1
+162,Liga MX,22,17,2026-03-29T08:52:55.873375+00:00,finalizado,1,1
+163,Liga MX,19,18,2026-03-30T11:52:55.873375+00:00,finalizado,3,3
+164,Liga MX,24,19,2026-03-31T12:52:55.873375+00:00,finalizado,1,1
+165,Liga MX,20,19,2026-04-01T09:52:55.873375+00:00,finalizado,3,4
+166,Liga MX,22,21,2026-04-02T08:52:55.873375+00:00,finalizado,1,0
+167,Liga MX,20,21,2026-04-03T12:52:55.873375+00:00,finalizado,1,1
+168,Liga MX,20,24,2026-04-04T14:52:55.873375+00:00,finalizado,0,2
+169,LigaPro Serie A,30,25,2026-02-08T14:52:55.873375+00:00,finalizado,5,2
+170,LigaPro Serie A,28,29,2026-02-09T13:52:55.873375+00:00,finalizado,3,2
+171,LigaPro Serie A,25,29,2026-02-10T12:52:55.873375+00:00,finalizado,2,0
+172,LigaPro Serie A,31,29,2026-02-11T14:52:55.873375+00:00,finalizado,2,3
+173,LigaPro Serie A,25,30,2026-02-12T16:52:55.873375+00:00,finalizado,1,5
+174,LigaPro Serie A,32,31,2026-02-13T10:52:55.873375+00:00,finalizado,2,1
+175,LigaPro Serie A,27,25,2026-02-14T15:52:55.873375+00:00,finalizado,0,2
+176,LigaPro Serie A,27,32,2026-02-15T09:52:55.873375+00:00,finalizado,1,4
+177,LigaPro Serie A,30,32,2026-02-16T15:52:55.873375+00:00,finalizado,3,1
+178,LigaPro Serie A,31,28,2026-02-17T10:52:55.873375+00:00,finalizado,1,1
+179,LigaPro Serie A,26,29,2026-02-18T10:52:55.873375+00:00,finalizado,1,5
+180,LigaPro Serie A,26,25,2026-02-19T17:52:55.873375+00:00,finalizado,2,1
+181,LigaPro Serie A,29,31,2026-02-20T16:52:55.873375+00:00,finalizado,1,0
+182,LigaPro Serie A,26,32,2026-02-21T16:52:55.873375+00:00,finalizado,3,0
+183,LigaPro Serie A,25,26,2026-02-22T12:52:55.873375+00:00,finalizado,4,1
+184,LigaPro Serie A,29,26,2026-02-23T08:52:55.873375+00:00,finalizado,3,2
+185,LigaPro Serie A,27,29,2026-02-24T09:52:55.873375+00:00,finalizado,2,2
+186,LigaPro Serie A,32,26,2026-02-25T12:52:55.873375+00:00,finalizado,3,2
+187,LigaPro Serie A,30,28,2026-02-26T16:52:55.873375+00:00,finalizado,2,2
+188,LigaPro Serie A,27,28,2026-02-27T09:52:55.873375+00:00,finalizado,2,1
+189,LigaPro Serie A,32,27,2026-02-28T13:52:55.873375+00:00,finalizado,1,2
+190,LigaPro Serie A,32,25,2026-03-01T08:52:55.873375+00:00,finalizado,0,1
+191,LigaPro Serie A,30,31,2026-03-02T12:52:55.873375+00:00,finalizado,2,1
+192,LigaPro Serie A,29,32,2026-03-03T11:52:55.873375+00:00,finalizado,5,0
+193,LigaPro Serie A,31,30,2026-03-04T09:52:55.873375+00:00,finalizado,4,0
+194,LigaPro Serie A,27,30,2026-03-05T14:52:55.873375+00:00,finalizado,2,2
+195,LigaPro Serie A,30,26,2026-03-06T08:52:55.873375+00:00,finalizado,3,1
+196,LigaPro Serie A,28,27,2026-03-07T10:52:55.873375+00:00,finalizado,3,2
+197,LigaPro Serie A,27,31,2026-03-08T12:52:55.873375+00:00,finalizado,3,4
+198,LigaPro Serie A,31,27,2026-03-09T17:52:55.873375+00:00,finalizado,3,2
+199,LigaPro Serie A,28,30,2026-03-10T15:52:55.873375+00:00,finalizado,3,1
+200,LigaPro Serie A,32,30,2026-03-11T12:52:55.873375+00:00,finalizado,0,1
+201,LigaPro Serie A,25,27,2026-03-12T08:52:55.873375+00:00,finalizado,4,3
+202,LigaPro Serie A,29,27,2026-03-13T11:52:55.873375+00:00,finalizado,3,3
+203,LigaPro Serie A,30,29,2026-03-14T10:52:55.873375+00:00,finalizado,1,1
+204,LigaPro Serie A,26,28,2026-03-15T14:52:55.873375+00:00,finalizado,3,3
+205,LigaPro Serie A,31,25,2026-03-16T08:52:55.873375+00:00,finalizado,4,3
+206,LigaPro Serie A,29,30,2026-03-17T09:52:55.873375+00:00,finalizado,3,3
+207,LigaPro Serie A,31,26,2026-03-18T10:52:55.873375+00:00,finalizado,0,4
+208,LigaPro Serie A,32,29,2026-03-19T17:52:55.873375+00:00,finalizado,3,5
+209,LigaPro Serie A,28,31,2026-03-20T12:52:55.873375+00:00,finalizado,4,2
+210,LigaPro Serie A,26,27,2026-03-21T11:52:55.873375+00:00,finalizado,3,2
+211,LigaPro Serie A,32,28,2026-03-22T12:52:55.873375+00:00,finalizado,1,2
+212,LigaPro Serie A,25,28,2026-03-23T17:52:55.873375+00:00,finalizado,1,4
+213,LigaPro Serie A,27,26,2026-03-24T16:52:55.873375+00:00,finalizado,2,1
+214,LigaPro Serie A,30,27,2026-03-25T14:52:55.873375+00:00,finalizado,3,0
+215,LigaPro Serie A,26,30,2026-03-26T16:52:55.873375+00:00,finalizado,3,2
+216,LigaPro Serie A,28,26,2026-03-27T08:52:55.873375+00:00,finalizado,2,3
+217,LigaPro Serie A,28,25,2026-03-28T13:52:55.873375+00:00,finalizado,6,1
+218,LigaPro Serie A,25,32,2026-03-29T10:52:55.873375+00:00,finalizado,3,1
+219,LigaPro Serie A,29,28,2026-03-30T09:52:55.873375+00:00,finalizado,4,0
+220,LigaPro Serie A,28,32,2026-03-31T17:52:55.873375+00:00,finalizado,1,2
+221,LigaPro Serie A,25,31,2026-04-01T12:52:55.873375+00:00,finalizado,3,2
+222,LigaPro Serie A,29,25,2026-04-02T13:52:55.873375+00:00,finalizado,5,1
+223,LigaPro Serie A,31,32,2026-04-03T17:52:55.873375+00:00,finalizado,2,5
+224,LigaPro Serie A,26,31,2026-04-04T17:52:55.873375+00:00,finalizado,2,0
+225,Categoria Primera A,39,34,2026-02-08T17:52:55.873375+00:00,finalizado,1,3
+226,Categoria Primera A,38,39,2026-02-09T13:52:55.873375+00:00,finalizado,3,3
+227,Categoria Primera A,39,40,2026-02-10T08:52:55.873375+00:00,finalizado,1,5
+228,Categoria Primera A,38,33,2026-02-11T12:52:55.873375+00:00,finalizado,2,2
+229,Categoria Primera A,34,38,2026-02-12T12:52:55.873375+00:00,finalizado,2,1
+230,Categoria Primera A,33,34,2026-02-13T15:52:55.873375+00:00,finalizado,4,2
+231,Categoria Primera A,37,35,2026-02-14T12:52:55.873375+00:00,finalizado,4,3
+232,Categoria Primera A,37,33,2026-02-15T11:52:55.873375+00:00,finalizado,0,1
+233,Categoria Primera A,35,33,2026-02-16T12:52:55.873375+00:00,finalizado,2,4
+234,Categoria Primera A,40,36,2026-02-17T14:52:55.873375+00:00,finalizado,2,1
+235,Categoria Primera A,34,40,2026-02-18T16:52:55.873375+00:00,finalizado,2,2
+236,Categoria Primera A,34,39,2026-02-19T12:52:55.873375+00:00,finalizado,1,2
+237,Categoria Primera A,38,35,2026-02-20T16:52:55.873375+00:00,finalizado,0,3
+238,Categoria Primera A,37,34,2026-02-21T10:52:55.873375+00:00,finalizado,2,2
+239,Categoria Primera A,38,40,2026-02-22T17:52:55.873375+00:00,finalizado,5,3
+240,Categoria Primera A,40,38,2026-02-23T15:52:55.873375+00:00,finalizado,3,3
+241,Categoria Primera A,33,39,2026-02-24T14:52:55.873375+00:00,finalizado,3,2
+242,Categoria Primera A,36,38,2026-02-25T12:52:55.873375+00:00,finalizado,4,1
+243,Categoria Primera A,37,39,2026-02-26T08:52:55.873375+00:00,finalizado,3,2
+244,Categoria Primera A,34,33,2026-02-27T10:52:55.873375+00:00,finalizado,2,0
+245,Categoria Primera A,37,38,2026-02-28T08:52:55.873375+00:00,finalizado,3,1
+246,Categoria Primera A,36,40,2026-03-01T09:52:55.873375+00:00,finalizado,4,2
+247,Categoria Primera A,37,40,2026-03-02T09:52:55.873375+00:00,finalizado,5,2
+248,Categoria Primera A,34,36,2026-03-03T13:52:55.873375+00:00,finalizado,5,1
+249,Categoria Primera A,33,35,2026-03-04T15:52:55.873375+00:00,finalizado,3,5
+250,Categoria Primera A,39,37,2026-03-05T16:52:55.873375+00:00,finalizado,1,2
+251,Categoria Primera A,36,39,2026-03-06T12:52:55.873375+00:00,finalizado,2,1
+252,Categoria Primera A,40,33,2026-03-07T11:52:55.873375+00:00,finalizado,5,1
+253,Categoria Primera A,40,34,2026-03-08T12:52:55.873375+00:00,finalizado,4,4
+254,Categoria Primera A,35,40,2026-03-09T15:52:55.873375+00:00,finalizado,5,3
+255,Categoria Primera A,35,37,2026-03-10T10:52:55.873375+00:00,finalizado,0,1
+256,Categoria Primera A,38,36,2026-03-11T13:52:55.873375+00:00,finalizado,0,2
+257,Categoria Primera A,38,34,2026-03-12T17:52:55.873375+00:00,finalizado,1,3
+258,Categoria Primera A,33,36,2026-03-13T13:52:55.873375+00:00,finalizado,4,3
+259,Categoria Primera A,40,35,2026-03-14T13:52:55.873375+00:00,finalizado,2,2
+260,Categoria Primera A,39,33,2026-03-15T08:52:55.873375+00:00,finalizado,1,1
+261,Categoria Primera A,34,37,2026-03-16T10:52:55.873375+00:00,finalizado,2,3
+262,Categoria Primera A,33,37,2026-03-17T10:52:55.873375+00:00,finalizado,1,2
+263,Categoria Primera A,39,38,2026-03-18T16:52:55.873375+00:00,finalizado,2,3
+264,Categoria Primera A,34,35,2026-03-19T14:52:55.873375+00:00,finalizado,3,2
+265,Categoria Primera A,38,37,2026-03-20T13:52:55.873375+00:00,finalizado,1,1
+266,Categoria Primera A,35,34,2026-03-21T15:52:55.873375+00:00,finalizado,1,2
+267,Categoria Primera A,39,35,2026-03-22T17:52:55.873375+00:00,finalizado,2,6
+268,Categoria Primera A,37,36,2026-03-23T08:52:55.873375+00:00,finalizado,6,3
+269,Categoria Primera A,36,34,2026-03-24T14:52:55.873375+00:00,finalizado,2,3
+270,Categoria Primera A,33,40,2026-03-25T16:52:55.873375+00:00,finalizado,0,1
+271,Categoria Primera A,36,35,2026-03-26T16:52:55.873375+00:00,finalizado,3,1
+272,Categoria Primera A,33,38,2026-03-27T08:52:55.873375+00:00,finalizado,6,1
+273,Categoria Primera A,36,37,2026-03-28T11:52:55.873375+00:00,finalizado,4,3
+274,Categoria Primera A,35,39,2026-03-29T09:52:55.873375+00:00,finalizado,2,1
+275,Categoria Primera A,35,36,2026-03-30T09:52:55.873375+00:00,finalizado,2,1
+276,Categoria Primera A,35,38,2026-03-31T13:52:55.873375+00:00,finalizado,2,3
+277,Categoria Primera A,40,39,2026-04-01T16:52:55.873375+00:00,finalizado,3,2
+278,Categoria Primera A,36,33,2026-04-02T17:52:55.873375+00:00,finalizado,3,1
+279,Categoria Primera A,40,37,2026-04-03T09:52:55.873375+00:00,finalizado,3,0
+280,Categoria Primera A,39,36,2026-04-04T14:52:55.873375+00:00,finalizado,4,2
+281,MLS,41,44,2026-02-08T11:52:55.873375+00:00,finalizado,1,2
+282,MLS,45,47,2026-02-09T12:52:55.873375+00:00,finalizado,2,0
+283,MLS,41,42,2026-02-10T14:52:55.873375+00:00,finalizado,0,4
+284,MLS,45,43,2026-02-11T11:52:55.873375+00:00,finalizado,4,4
+285,MLS,41,48,2026-02-12T10:52:55.873375+00:00,finalizado,2,2
+286,MLS,46,48,2026-02-13T14:52:55.873375+00:00,finalizado,4,2
+287,MLS,47,45,2026-02-14T08:52:55.873375+00:00,finalizado,1,0
+288,MLS,42,46,2026-02-15T11:52:55.873375+00:00,finalizado,2,1
+289,MLS,41,46,2026-02-16T14:52:55.873375+00:00,finalizado,3,4
+290,MLS,44,46,2026-02-17T17:52:55.873375+00:00,finalizado,2,3
+291,MLS,46,41,2026-02-18T10:52:55.873375+00:00,finalizado,3,3
+292,MLS,46,47,2026-02-19T12:52:55.873375+00:00,finalizado,1,1
+293,MLS,48,43,2026-02-20T13:52:55.873375+00:00,finalizado,5,4
+294,MLS,48,47,2026-02-21T14:52:55.873375+00:00,finalizado,6,2
+295,MLS,47,44,2026-02-22T14:52:55.873375+00:00,finalizado,0,1
+296,MLS,43,44,2026-02-23T15:52:55.873375+00:00,finalizado,3,1
+297,MLS,48,41,2026-02-24T10:52:55.873375+00:00,finalizado,4,5
+298,MLS,42,44,2026-02-25T16:52:55.873375+00:00,finalizado,3,2
+299,MLS,44,43,2026-02-26T13:52:55.873375+00:00,finalizado,5,4
+300,MLS,46,45,2026-02-27T17:52:55.873375+00:00,finalizado,1,5
+301,MLS,44,42,2026-02-28T09:52:55.873375+00:00,finalizado,3,2
+302,MLS,47,48,2026-03-01T14:52:55.873375+00:00,finalizado,4,1
+303,MLS,46,42,2026-03-02T16:52:55.873375+00:00,finalizado,1,0
+304,MLS,42,45,2026-03-03T15:52:55.873375+00:00,finalizado,1,1
+305,MLS,43,41,2026-03-04T17:52:55.873375+00:00,finalizado,2,1
+306,MLS,47,42,2026-03-05T09:52:55.873375+00:00,finalizado,5,2
+307,MLS,48,46,2026-03-06T10:52:55.873375+00:00,finalizado,0,0
+308,MLS,44,41,2026-03-07T13:52:55.873375+00:00,finalizado,3,0
+309,MLS,42,48,2026-03-08T10:52:55.873375+00:00,finalizado,4,5
+310,MLS,41,47,2026-03-09T09:52:55.873375+00:00,finalizado,0,2
+311,MLS,41,43,2026-03-10T15:52:55.873375+00:00,finalizado,2,2
+312,MLS,45,48,2026-03-11T10:52:55.873375+00:00,finalizado,2,0
+313,MLS,44,47,2026-03-12T08:52:55.873375+00:00,finalizado,2,2
+314,MLS,43,48,2026-03-13T12:52:55.873375+00:00,finalizado,6,3
+315,MLS,44,45,2026-03-14T09:52:55.873375+00:00,finalizado,2,3
+316,MLS,48,44,2026-03-15T10:52:55.873375+00:00,finalizado,2,2
+317,MLS,42,43,2026-03-16T11:52:55.873375+00:00,finalizado,0,4
+318,MLS,43,46,2026-03-17T08:52:55.873375+00:00,finalizado,5,2
+319,MLS,42,47,2026-03-18T11:52:55.873375+00:00,finalizado,1,5
+320,MLS,41,45,2026-03-19T16:52:55.873375+00:00,finalizado,2,0
+321,MLS,47,46,2026-03-20T17:52:55.873375+00:00,finalizado,3,4
+322,MLS,47,43,2026-03-21T09:52:55.873375+00:00,finalizado,2,4
+323,MLS,45,42,2026-03-22T13:52:55.873375+00:00,finalizado,3,2
+324,MLS,42,41,2026-03-23T10:52:55.873375+00:00,finalizado,2,2
+325,MLS,47,41,2026-03-24T09:52:55.873375+00:00,finalizado,6,3
+326,MLS,46,43,2026-03-25T12:52:55.873375+00:00,finalizado,3,4
+327,MLS,48,42,2026-03-26T12:52:55.873375+00:00,finalizado,2,5
+328,MLS,44,48,2026-03-27T12:52:55.873375+00:00,finalizado,3,0
+329,MLS,45,44,2026-03-28T08:52:55.873375+00:00,finalizado,4,3
+330,MLS,43,42,2026-03-29T14:52:55.873375+00:00,finalizado,0,1
+331,MLS,45,46,2026-03-30T16:52:55.873375+00:00,finalizado,1,1
+332,MLS,48,45,2026-03-31T15:52:55.873375+00:00,finalizado,1,1
+333,MLS,46,44,2026-04-01T15:52:55.873375+00:00,finalizado,1,1
+334,MLS,45,41,2026-04-02T14:52:55.873375+00:00,finalizado,0,1
+335,MLS,43,45,2026-04-03T15:52:55.873375+00:00,finalizado,3,1
+336,MLS,43,47,2026-04-04T08:52:55.873375+00:00,finalizado,2,0
+337,Liga Profesional,1,2,2026-07-09T15:52:55.874863+00:00,programado,,
+338,Liga Profesional,3,7,2026-07-10T15:52:55.874863+00:00,programado,,
+339,Brasileirao Serie A,9,10,2026-07-09T15:52:55.874863+00:00,programado,,
+340,Brasileirao Serie A,16,11,2026-07-10T15:52:55.874863+00:00,programado,,
+341,Liga MX,17,19,2026-07-09T15:52:55.874863+00:00,programado,,
+342,Liga MX,21,20,2026-07-10T15:52:55.874863+00:00,programado,,
+343,LigaPro Serie A,28,25,2026-07-09T15:52:55.874863+00:00,programado,,
+344,LigaPro Serie A,26,27,2026-07-10T15:52:55.874863+00:00,programado,,
+345,Categoria Primera A,33,34,2026-07-09T15:52:55.874863+00:00,programado,,
+346,Categoria Primera A,37,35,2026-07-10T15:52:55.874863+00:00,programado,,
+347,MLS,43,42,2026-07-09T15:52:55.874863+00:00,programado,,
+348,MLS,44,41,2026-07-10T15:52:55.874863+00:00,programado,,

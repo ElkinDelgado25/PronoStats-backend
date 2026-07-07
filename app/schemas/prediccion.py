@@ -21,3 +21,27 @@ class PrediccionOut(BaseModel):
     factores: list[FactorPronostico] = []
 
     model_config = {"from_attributes": True}
+
+
+class FactorGenerico(BaseModel):
+    """Factores adicionales devueltos por agentes no-1X2."""
+
+    model_config = {"extra": "allow"}
+
+
+class PrediccionCategoriaOut(BaseModel):
+    categoria: str
+    pronostico: str
+    confianza: float
+    probabilidades: dict[str, float]
+    modelo_version: str
+    factores: list[dict] = []
+
+    model_config = {"from_attributes": True}
+
+
+class PrediccionesPartidoOut(BaseModel):
+    partido_id: int
+    predicciones: list[PrediccionCategoriaOut]
+
+    model_config = {"from_attributes": True}

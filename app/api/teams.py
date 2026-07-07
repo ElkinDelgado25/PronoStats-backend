@@ -1,44 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query
 
-from app.db.session import get_db
-from app.models.equipo import Equipo
+from app.csv_store import store
 from app.schemas.equipo import EquipoOut, EquipoStats
-from app.services.team_stats import compute_team_form
 
 router = APIRouter(prefix="/teams", tags=["equipos"])
 
 
 @router.get("", response_model=list[EquipoOut])
-def listar_equipos(
-    league_id: int | None = Query(default=None),
-    db: Session = Depends(get_db),
-) -> list[Equipo]:
-    stmt = select(Equipo).order_by(Equipo.nombre)
-    if league_id is not None:
-        stmt = stmt.where(Equipo.liga_id == league_id)
-    return list(db.execute(stmt).scalars().all())
+def listar_equipos(league_id: int | None = Query(default=None)) -> list:
+    """Equipos provenientes del dataset CSV (equipos.csv)."""
+    return store.get_equipos(league_id)
 
 
 @router.get("/{equipo_id}/stats", response_model=EquipoStats)
-def stats_equipo(equipo_id: int, db: Session = Depends(get_db)) -> EquipoStats:
-    """HU-12: Estadisticas historicas de un equipo."""
-    equipo = db.get(Equipo, equipo_id)
-    if equipo is None:
+def stats_equipo(equipo_id: int) -> dict:
+    """HU-12: estadisticas historicas del equipo calculadas sobre goles.csv."""
+    stats = store.get_team_stats(equipo_id)
+    if stats is None:
         raise HTTPException(status_code=404, detail="Equipo no encontrado")
-
-    # limite grande para considerar todo el historial disponible
-    forma = compute_team_form(db, equipo_id, limit=1000)
-    return EquipoStats(
-        equipo_id=equipo.id,
-        nombre=equipo.nombre,
-        partidos_jugados=forma.partidos_jugados,
-        victorias=forma.victorias,
-        empates=forma.empates,
-        derrotas=forma.derrotas,
-        goles_favor=forma.goles_favor,
-        goles_contra=forma.goles_contra,
-        promedio_goles_favor=round(forma.promedio_goles_favor, 2),
-        promedio_goles_contra=round(forma.promedio_goles_contra, 2),
-    )
+    return stats

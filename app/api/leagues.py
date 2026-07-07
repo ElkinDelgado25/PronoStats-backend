@@ -1,14 +1,12 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 
-from app.db.session import get_db
-from app.models.liga import Liga
+from app.csv_store import store
 from app.schemas.liga import LigaOut
 
 router = APIRouter(prefix="/leagues", tags=["ligas"])
 
 
 @router.get("", response_model=list[LigaOut])
-def listar_ligas(db: Session = Depends(get_db)) -> list[Liga]:
-    return list(db.execute(select(Liga).order_by(Liga.nombre)).scalars().all())
+def listar_ligas() -> list:
+    """Ligas provenientes del dataset CSV (equipos.csv)."""
+    return store.get_ligas()

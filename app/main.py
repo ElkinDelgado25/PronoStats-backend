@@ -14,6 +14,7 @@ from app.api import (
     teams,
 )
 from app.core.config import settings
+from app.csv_store import store
 from app.db.base import Base
 from app.db.session import engine
 
@@ -23,8 +24,17 @@ import app.models  # noqa: F401
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # En dev (SQLite) crea las tablas automaticamente. En produccion usar Alembic.
+    # Tablas de la BD (usuarios/auth). En produccion usar Alembic.
     Base.metadata.create_all(bind=engine)
+    # Relee los datasets CSV (data/dataset_futbol/) en CADA arranque y
+    # recalcula pronosticos y metricas. Los datos de negocio NO se persisten
+    # en la BD: viven en memoria y provienen exclusivamente de los CSV.
+    store.load()
+    print(
+        f"[csv_store] CSV leidos: {len(store.ligas)} ligas, "
+        f"{len(store.equipos)} equipos y {len(store.partidos)} partidos.",
+        flush=True,
+    )
     yield
 
 
