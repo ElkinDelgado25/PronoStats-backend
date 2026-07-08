@@ -41,6 +41,10 @@ class SeleccionCombinadaOut(BaseModel):
     seleccion_label: str
     probabilidad: float
     cuota: float
+    liga_pais: str = ""
+    escudo_url: str | None = None
+    local_escudo_url: str | None = None
+    visitante_escudo_url: str | None = None
 
 
 class SubCombinadaOut(BaseModel):

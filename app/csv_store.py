@@ -292,6 +292,12 @@ class CsvStore:
     def get_ligas(self) -> list[LigaDTO]:
         return sorted(self.ligas, key=lambda l: l.nombre)
 
+    def get_liga(self, liga_id: int) -> LigaDTO | None:
+        for liga in self.ligas:
+            if liga.id == liga_id:
+                return liga
+        return None
+
     def get_equipos(self, liga_id: int | None = None) -> list[EquipoDTO]:
         equipos = self.equipos.values()
         if liga_id is not None:

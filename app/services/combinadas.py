@@ -81,6 +81,10 @@ class LegResuelto:
     categoria: str
     seleccion: str
     probabilidad: float
+    liga_pais: str = ""
+    escudo_url: str | None = None
+    local_escudo_url: str | None = None
+    visitante_escudo_url: str | None = None
 
 
 def normalizar_seleccion(categoria: str, seleccion: str) -> str:
@@ -173,6 +177,8 @@ def _resolver_leg(leg: SeleccionCombinadaIn) -> LegResuelto:
             ),
         )
 
+    liga = store.get_liga(partido.liga_id)
+
     return LegResuelto(
         partido_id=leg.partido_id,
         partido=f"{partido.local.nombre} vs {partido.visitante.nombre}",
@@ -180,6 +186,10 @@ def _resolver_leg(leg: SeleccionCombinadaIn) -> LegResuelto:
         categoria=categoria,
         seleccion=seleccion,
         probabilidad=probabilidades[seleccion],
+        liga_pais=liga.pais if liga else "",
+        escudo_url=liga.escudo_url if liga else None,
+        local_escudo_url=partido.local.escudo_url,
+        visitante_escudo_url=partido.visitante.escudo_url,
     )
 
 
@@ -195,6 +205,10 @@ def _leg_a_out(leg: LegResuelto) -> SeleccionCombinadaOut:
         seleccion_label=labels.get(leg.seleccion, leg.seleccion),
         probabilidad=round(leg.probabilidad, 4),
         cuota=_prob_a_cuota(leg.probabilidad),
+        liga_pais=leg.liga_pais,
+        escudo_url=leg.escudo_url,
+        local_escudo_url=leg.local_escudo_url,
+        visitante_escudo_url=leg.visitante_escudo_url,
     )
 
 

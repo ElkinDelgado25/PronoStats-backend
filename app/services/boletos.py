@@ -229,9 +229,33 @@ def liquidar_pendientes(db: Session) -> int:
     return len(boletos)
 
 
+def _enriquecer_selecciones(selecciones: list) -> list:
+    """Completa banderas de liga en snapshots antiguos al consultar boletos."""
+    out: list[dict] = []
+    for raw in selecciones:
+        sel = dict(raw)
+        if sel.get("liga_pais"):
+            out.append(sel)
+            continue
+        partido = store.get_partido(sel.get("partido_id", 0))
+        if partido is None:
+            out.append(sel)
+            continue
+        liga = store.get_liga(partido.liga_id)
+        if liga:
+            sel.setdefault("liga_pais", liga.pais)
+            sel.setdefault("escudo_url", liga.escudo_url)
+        sel.setdefault("local_escudo_url", partido.local.escudo_url)
+        sel.setdefault("visitante_escudo_url", partido.visitante.escudo_url)
+        out.append(sel)
+    return out
+
+
 def boleto_a_out(boleto: Boleto) -> BoletoOut:
-    return BoletoOut.model_validate(boleto)
+    out = BoletoOut.model_validate(boleto)
+    return out.model_copy(update={"selecciones": _enriquecer_selecciones(out.selecciones)})
 
 
 def boleto_a_consulta(boleto: Boleto) -> BoletoConsultaOut:
-    return BoletoConsultaOut.model_validate(boleto)
+    out = BoletoConsultaOut.model_validate(boleto)
+    return out.model_copy(update={"selecciones": _enriquecer_selecciones(out.selecciones)})
