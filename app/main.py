@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api import (
     admin,
@@ -21,6 +23,22 @@ from app.db.session import engine
 
 # Importa los modelos para que queden registrados en Base.metadata.
 import app.models  # noqa: F401
+
+CSRF_PROTECTED_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+
+def _origin_from_request(request: Request) -> str | None:
+    origin = request.headers.get("origin")
+    if origin:
+        return origin.rstrip("/")
+
+    referer = request.headers.get("referer")
+    if not referer:
+        return None
+    parsed = urlsplit(referer)
+    if not parsed.scheme or not parsed.netloc:
+        return None
+    return f"{parsed.scheme}://{parsed.netloc}"
 
 
 @asynccontextmanager
@@ -50,9 +68,24 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+
+@app.middleware("http")
+async def csrf_origin_guard(request: Request, call_next):
+    if (
+        request.method.upper() in CSRF_PROTECTED_METHODS
+        and request.cookies.get(settings.jwt_cookie_name)
+    ):
+        origin = _origin_from_request(request)
+        if origin and origin not in settings.cors_origins_list:
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "Origen no permitido para esta sesion"},
+            )
+    return await call_next(request)
 
 app.include_router(auth.router)
 app.include_router(leagues.router)

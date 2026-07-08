@@ -22,6 +22,13 @@ pip install -r requirements.txt
 cp .env.example .env   # (Windows: copy .env.example .env)
 ```
 
+Antes de ejecutar, define un `JWT_SECRET` aleatorio en `.env` con al menos 32
+caracteres. En PowerShell puedes generar uno asi:
+
+```powershell
+[guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
+```
+
 ## Origen de los datos: datasets CSV (data/dataset_futbol/)
 
 Los datos deportivos NO se guardan en la base de datos. Viven en dos archivos CSV
@@ -106,6 +113,17 @@ El endpoint `GET /stats/model-performance` devuelve `aciertos`, `fallos`,
 La BD (SQLAlchemy) se usa solo para usuarios/auth. Configura `DATABASE_URL` en
 `.env`; si conserva el valor `BDD_CLOUD` (o vacio), se usa SQLite local
 (`pronostats_dev.db`). Las tablas se crean automaticamente al iniciar.
+
+## Seguridad de despliegue
+
+- `JWT_SECRET` es obligatorio y no debe reutilizarse entre ambientes.
+- En produccion usa `ENVIRONMENT=production`, `JWT_COOKIE_SECURE=true` y origenes
+  explicitos en `CORS_ORIGINS`.
+- `CORS_ORIGINS` no acepta `*` porque la app usa cookies HttpOnly.
+- `POSTGRES_PASSWORD` debe definirse en `.env` antes de levantar
+  `docker-compose.yml`.
+- El endpoint `/auth/forgot-password` responde de forma generica y no devuelve
+  tokens de recuperacion en el cuerpo HTTP.
 
 ## Ejecutar
 
