@@ -189,10 +189,27 @@ def crear_boleto(db: Session, usuario: Usuario, payload: BoletoCrearIn) -> Bolet
     return boleto
 
 
-def consultar_boleto(db: Session, ticket_uuid: str) -> Boleto:
-    boleto = db.execute(select(Boleto).where(Boleto.uuid == ticket_uuid)).scalar_one_or_none()
+def _buscar_boleto(db: Session, referencia: str) -> Boleto | None:
+    ref = referencia.strip()
+    if not ref:
+        return None
+    exacto = db.execute(select(Boleto).where(Boleto.uuid == ref)).scalar_one_or_none()
+    if exacto:
+        return exacto
+    prefijo = ref.upper().removeprefix("PRN-").replace("-", "")
+    if len(prefijo) < 4:
+        return None
+    candidatos = db.execute(select(Boleto)).scalars().all()
+    for b in candidatos:
+        if b.uuid.replace("-", "").upper().startswith(prefijo):
+            return b
+    return None
+
+
+def consultar_boleto(db: Session, referencia: str) -> Boleto:
+    boleto = _buscar_boleto(db, referencia)
     if boleto is None:
-        raise HTTPException(status_code=404, detail="Boleto no encontrado")
+        raise HTTPException(status_code=404, detail="Pronostico no encontrado")
     if boleto.estado == EstadoBoleto.pendiente:
         liquidar_boleto(db, boleto)
     return boleto

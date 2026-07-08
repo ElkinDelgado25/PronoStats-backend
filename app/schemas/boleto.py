@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 
 from app.models.boleto import EstadoBoleto
 from app.schemas.combinada import SeleccionCombinadaIn, TipoCombinada
@@ -31,6 +31,11 @@ class BoletoOut(BaseModel):
     liquidado_en: datetime | None
 
     model_config = {"from_attributes": True}
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def codigo_pronostico(self) -> str:
+        return f"PRN-{self.uuid.replace('-', '')[:8].upper()}"
 
 
 class BoletoConsultaOut(BoletoOut):
