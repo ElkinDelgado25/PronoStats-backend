@@ -7,7 +7,9 @@ from fastapi.responses import JSONResponse
 
 from app.api import (
     admin,
+    analysis_history,
     auth,
+    boletos,
     combinadas,
     favorites,
     leagues,
@@ -93,7 +95,9 @@ app.include_router(teams.router)
 app.include_router(matches.router)
 app.include_router(predictions.router)
 app.include_router(combinadas.router)
+app.include_router(boletos.router)
 app.include_router(favorites.router)
+app.include_router(analysis_history.router)
 app.include_router(stats.router)
 app.include_router(admin.router)
 

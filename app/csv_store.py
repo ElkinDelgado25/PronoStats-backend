@@ -30,12 +30,30 @@ GOLES_CSV = DATASET_DIR / "goles.csv"
 TEMPORADA = "2026"
 
 
+PAIS_A_CODIGO_BANDERA: dict[str, str] = {
+    "Argentina": "ar",
+    "Brasil": "br",
+    "Colombia": "co",
+    "Mexico": "mx",
+    "Ecuador": "ec",
+    "Estados Unidos": "us",
+}
+
+
+def _escudo_liga(pais: str) -> str | None:
+    code = PAIS_A_CODIGO_BANDERA.get(pais)
+    if not code:
+        return None
+    return f"https://flagcdn.com/w40/{code}.png"
+
+
 @dataclass
 class LigaDTO:
     id: int
     nombre: str
     pais: str
     temporada: str
+    escudo_url: str | None = None
 
 
 @dataclass
@@ -131,6 +149,7 @@ class CsvStore:
                         nombre=nombre_liga,
                         pais=fila["pais"].strip(),
                         temporada=TEMPORADA,
+                        escudo_url=_escudo_liga(fila["pais"].strip()),
                     )
                     self.ligas.append(liga)
                     self._liga_por_nombre[nombre_liga] = liga
@@ -330,6 +349,105 @@ class CsvStore:
             "goles_contra": forma.goles_contra,
             "promedio_goles_favor": round(forma.promedio_goles_favor, 2),
             "promedio_goles_contra": round(forma.promedio_goles_contra, 2),
+            "forma_reciente": round(forma.forma_reciente, 4),
+        }
+
+    def get_h2h_by_teams(self, equipo_a_id: int, equipo_b_id: int) -> dict | None:
+        equipo_a = self.equipos.get(equipo_a_id)
+        equipo_b = self.equipos.get(equipo_b_id)
+        if equipo_a is None or equipo_b is None:
+            return None
+
+        historial = [
+            p
+            for p in self._finalizados()
+            if {p.local.id, p.visitante.id} == {equipo_a_id, equipo_b_id}
+        ]
+        historial.sort(key=lambda p: p.fecha, reverse=True)
+
+        victorias_a = empates = victorias_b = 0
+        for p in historial:
+            assert p.resultado is not None
+            ganador = p.resultado.ganador
+            if ganador == "empate":
+                empates += 1
+            elif (ganador == "local" and p.local.id == equipo_a_id) or (
+                ganador == "visitante" and p.visitante.id == equipo_a_id
+            ):
+                victorias_a += 1
+            else:
+                victorias_b += 1
+
+        return {
+            "total_partidos": len(historial),
+            "victorias_equipo_a": victorias_a,
+            "empates": empates,
+            "victorias_equipo_b": victorias_b,
+            "historial": historial[:10],
+        }
+
+    @staticmethod
+    def _comparar_valor(
+        valor_a: float,
+        valor_b: float,
+        nombre_a: str,
+        nombre_b: str,
+        menor_es_mejor: bool = False,
+    ) -> str:
+        if valor_a == valor_b:
+            return "Empate"
+        if menor_es_mejor:
+            return nombre_a if valor_a < valor_b else nombre_b
+        return nombre_a if valor_a > valor_b else nombre_b
+
+    def compare_teams(self, equipo_a_id: int, equipo_b_id: int) -> dict | None:
+        if equipo_a_id == equipo_b_id:
+            return None
+
+        stats_a = self.get_team_stats(equipo_a_id)
+        stats_b = self.get_team_stats(equipo_b_id)
+        h2h = self.get_h2h_by_teams(equipo_a_id, equipo_b_id)
+        if stats_a is None or stats_b is None or h2h is None:
+            return None
+
+        nombre_a = stats_a["nombre"]
+        nombre_b = stats_b["nombre"]
+        puntos_a = (
+            stats_a["forma_reciente"]
+            + stats_a["promedio_goles_favor"] / 4
+            - stats_a["promedio_goles_contra"] / 4
+        )
+        puntos_b = (
+            stats_b["forma_reciente"]
+            + stats_b["promedio_goles_favor"] / 4
+            - stats_b["promedio_goles_contra"] / 4
+        )
+
+        return {
+            "equipo_a": stats_a,
+            "equipo_b": stats_b,
+            "enfrentamientos_directos": h2h,
+            "resumen": {
+                "mejor_forma": self._comparar_valor(
+                    stats_a["forma_reciente"], stats_b["forma_reciente"], nombre_a, nombre_b
+                ),
+                "mejor_ataque": self._comparar_valor(
+                    stats_a["promedio_goles_favor"],
+                    stats_b["promedio_goles_favor"],
+                    nombre_a,
+                    nombre_b,
+                ),
+                "mejor_defensa": self._comparar_valor(
+                    stats_a["promedio_goles_contra"],
+                    stats_b["promedio_goles_contra"],
+                    nombre_a,
+                    nombre_b,
+                    menor_es_mejor=True,
+                ),
+                "ventaja_general": self._comparar_valor(
+                    round(puntos_a, 4), round(puntos_b, 4), nombre_a, nombre_b
+                ),
+            },
         }
 
     def get_h2h(self, partido_id: int) -> dict | None:

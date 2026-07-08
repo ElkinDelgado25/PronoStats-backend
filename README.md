@@ -151,6 +151,7 @@ Datos deportivos servidos desde el proveedor CSV:
 | GET | `/matches/{id}/prediction` | Pronostico 1X2 + factores + confianza | HU-07, HU-08, HU-09 |
 | GET | `/teams` | Listar equipos | - |
 | GET | `/teams/{id}/stats` | Estadisticas historicas de un equipo | HU-12 |
+| GET | `/teams/compare` | Comparar dos equipos por estadisticas e historial directo | HU-11 |
 | GET | `/stats/model-performance` | Aciertos vs fallos (porcentaje de acierto) | Panel metricas |
 
 Autenticacion y administracion (base de datos):
@@ -161,6 +162,7 @@ Autenticacion y administracion (base de datos):
 | POST | `/auth/login` | Inicio de sesion | HU-02 |
 | POST | `/auth/forgot-password` | Recuperar contrasena | HU-03 |
 | GET | `/favorites` `POST` `DELETE` | Favoritos del usuario | HU-13 |
+| GET/POST/DELETE | `/analysis-history` | Historial de analisis consultados | HU-14 |
 | POST/PUT/DELETE | `/admin/...` | CRUD administrativo (BD) | HU-15, HU-16, HU-17 |
 
 > Nota: los endpoints de datos deportivos leen del CSV; los de `/admin` operan

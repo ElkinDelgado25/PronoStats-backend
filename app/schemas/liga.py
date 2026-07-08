@@ -19,5 +19,6 @@ class LigaUpdate(BaseModel):
 
 class LigaOut(LigaBase):
     id: int
+    escudo_url: str | None = None
 
     model_config = {"from_attributes": True}

@@ -34,3 +34,18 @@ class EquipoStats(BaseModel):
     goles_contra: int
     promedio_goles_favor: float
     promedio_goles_contra: float
+    forma_reciente: float
+
+
+class ComparacionResumen(BaseModel):
+    mejor_forma: str
+    mejor_ataque: str
+    mejor_defensa: str
+    ventaja_general: str
+
+
+class EquipoComparacionOut(BaseModel):
+    equipo_a: EquipoStats
+    equipo_b: EquipoStats
+    enfrentamientos_directos: dict
+    resumen: ComparacionResumen

@@ -13,6 +13,7 @@ from app.core.security import (
     verify_password,
 )
 from app.db.session import get_db
+from app.services.wallet import obtener_o_crear_cartera
 from app.models.usuario import Usuario
 from app.schemas.auth import (
     AuthSessionOut,
@@ -97,6 +98,7 @@ def registrar(
     db.add(usuario)
     db.commit()
     db.refresh(usuario)
+    obtener_o_crear_cartera(db, usuario)
     return _session_response(response, usuario)
 
 

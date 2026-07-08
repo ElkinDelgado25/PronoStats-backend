@@ -8,7 +8,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.boleto import Boleto
+    from app.models.cartera import Cartera
     from app.models.favorito import Favorito
+    from app.models.historial_analisis import HistorialAnalisis
 
 
 class RolUsuario(str, enum.Enum):
@@ -31,5 +34,14 @@ class Usuario(Base):
     )
 
     favoritos: Mapped[list["Favorito"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
+    historial_analisis: Mapped[list["HistorialAnalisis"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
+    cartera: Mapped["Cartera | None"] = relationship(
+        back_populates="usuario", uselist=False, cascade="all, delete-orphan"
+    )
+    boletos: Mapped[list["Boleto"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
