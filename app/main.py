@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import (
     admin,
     auth,
+    combinadas,
     favorites,
     leagues,
     matches,
@@ -58,6 +59,7 @@ app.include_router(leagues.router)
 app.include_router(teams.router)
 app.include_router(matches.router)
 app.include_router(predictions.router)
+app.include_router(combinadas.router)
 app.include_router(favorites.router)
 app.include_router(stats.router)
 app.include_router(admin.router)

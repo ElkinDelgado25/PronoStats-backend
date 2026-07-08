@@ -1,10 +1,17 @@
 import enum
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.equipo import Equipo
+    from app.models.liga import Liga
+    from app.models.prediccion import Prediccion
+    from app.models.resultado import Resultado
 
 
 class EstadoPartido(str, enum.Enum):
