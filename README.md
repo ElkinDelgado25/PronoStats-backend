@@ -3,31 +3,104 @@
 API REST de **PronoStats**: pronosticos deportivos basados en estadisticas historicas.
 Construida con **FastAPI + SQLAlchemy**. Los datos de negocio (ligas, equipos y
 partidos) provienen de **datasets CSV** que se leen en memoria en cada arranque;
-la base de datos solo se usa para autenticacion de usuarios.
+la base de datos se usa para autenticacion, boletos, combinadas y cartera.
+
+Guia de instalacion completa del monorepo: [../README.md](../README.md)
 
 ## Requisitos
 
-- Python 3.10+ (probado con 3.13)
+- Python **3.10+** (probado con 3.13)
+- pip y venv
 
 ## Instalacion
 
-```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# Linux/Mac
-source .venv/bin/activate
-
-pip install -r requirements.txt
-cp .env.example .env   # (Windows: copy .env.example .env)
-```
-
-Antes de ejecutar, define un `JWT_SECRET` aleatorio en `.env` con al menos 32
-caracteres. En PowerShell puedes generar uno asi:
+### Windows (PowerShell)
 
 ```powershell
+cd PronoStats-backend
+
+python -m venv .venv
+.venv\Scripts\activate
+
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+### Linux / macOS
+
+```bash
+cd PronoStats-backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+### Configurar `.env`
+
+Obligatorio: define `JWT_SECRET` (minimo 32 caracteres).
+
+```powershell
+# PowerShell — generar secreto
 [guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
 ```
+
+Ejemplo minimo en `.env`:
+
+```env
+JWT_SECRET=pega_aqui_tu_clave_generada
+DATABASE_URL=BDD_CLOUD
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+Con `DATABASE_URL=BDD_CLOUD` (o vacio) se usa SQLite local (`pronostats_dev.db`).
+Las tablas se crean automaticamente al iniciar.
+
+### Usuarios de prueba
+
+```bash
+python -m app.seed
+```
+
+| Rol | Email | Contrasena |
+| --- | --- | --- |
+| Admin | admin@pronostats.com | admin123 |
+| Usuario | usuario@pronostats.com | usuario123 |
+
+## Ejecutar
+
+```bash
+# (Opcional) regenerar datasets CSV de futbol
+python -m app.generate_dataset
+
+# Levantar el servidor (relee CSV en cada arranque)
+uvicorn app.main:app --reload
+```
+
+- API: http://localhost:8000
+- Swagger: http://localhost:8000/docs
+
+Luego inicia el frontend en [PronoStats-Frontend](../PronoStats-Frontend).
+
+## PostgreSQL opcional (Docker)
+
+```bash
+# Define POSTGRES_PASSWORD en .env
+docker compose up -d
+```
+
+```env
+DATABASE_URL=postgresql+psycopg://pronostats:TU_PASSWORD@127.0.0.1:15432/backend_pronoticos
+```
+
+## Solucion de problemas
+
+| Problema | Solucion |
+| --- | --- |
+| Error al arrancar por JWT | Define `JWT_SECRET` en `.env` |
+| Frontend no conecta | Revisa `CORS_ORIGINS` incluye `http://localhost:5173` |
+| Sin partidos | Verifica que existan `data/dataset_futbol/*.csv` o ejecuta `generate_dataset` |
+| Login falla | Ejecuta `python -m app.seed` |
 
 ## Origen de los datos: datasets CSV (data/dataset_futbol/)
 
@@ -124,19 +197,6 @@ La BD (SQLAlchemy) se usa solo para usuarios/auth. Configura `DATABASE_URL` en
   `docker-compose.yml`.
 - El endpoint `/auth/forgot-password` responde de forma generica y no devuelve
   tokens de recuperacion en el cuerpo HTTP.
-
-## Ejecutar
-
-```bash
-# (Opcional) regenerar los datasets CSV
-python -m app.generate_dataset
-
-# Levantar el servidor (relee los CSV en cada arranque)
-uvicorn app.main:app --reload
-```
-
-- API: http://localhost:8000
-- Documentacion interactiva (Swagger): http://localhost:8000/docs
 
 ## Contrato de la API (resumen)
 
