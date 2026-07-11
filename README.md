@@ -5,18 +5,220 @@ Construida con **FastAPI + SQLAlchemy**. Los datos de negocio (ligas, equipos y
 partidos) provienen de **datasets CSV** que se leen en memoria en cada arranque;
 la base de datos se usa para autenticacion, boletos, combinadas y cartera.
 
-Guia de instalacion completa del monorepo: [../README.md](../README.md)
+Repositorio: https://github.com/ElkinDelgado25/PronoStats-backend.git
+
+Frontend companion: https://github.com/ElkinDelgado25/PronoStats-Frontend.git
+
+---
 
 ## Requisitos
 
-- Python **3.10+** (probado con 3.13)
-- pip y venv
+| Herramienta | Version | Para que sirve | Como comprobarlo |
+| --- | --- | --- | --- |
+| **Python** | 3.10+ (probado con 3.13) | Ejecutar la API | `python --version` o `python3 --version` |
+| **pip** | viene con Python | Instalar paquetes | `pip --version` |
+| **Git** | cualquiera | Clonar el repo | `git --version` |
+| **Docker** | opcional | Solo si usas Postgres local | `docker --version` |
 
-## Instalacion
+En Windows, al instalar Python marca **Add python.exe to PATH**.
+
+---
+
+## Instalacion paso a paso
+
+Sigue los pasos **en orden**. Cada comando incluye **para que sirve**.
+
+### Paso 0 — Clonar el repositorio
+
+```powershell
+git clone https://github.com/ElkinDelgado25/PronoStats-backend.git
+cd PronoStats-backend
+```
+
+| Comando | Por que se usa |
+| --- | --- |
+| `git clone ...` | Descarga el codigo fuente del backend a tu PC |
+| `cd PronoStats-backend` | Entra a la carpeta del proyecto; los siguientes comandos deben ejecutarse ahi |
+
+Si ya tienes el monorepo local, solo haz `cd PronoStats-backend` (omite el clone).
+
+---
+
+### Paso 1 — Crear un entorno virtual
+
+Un entorno virtual (`.venv`) aisla las librerias de este proyecto para no mezclarlas con otros Python del sistema.
+
+**Windows (PowerShell):**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+**Linux / macOS:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+| Comando | Por que se usa |
+| --- | --- |
+| `python -m venv .venv` | Crea la carpeta `.venv` con un Python aislado para PronoStats |
+| `.venv\Scripts\activate` (Windows) | Activa ese entorno en la terminal actual (veras `(.venv)` al inicio) |
+| `source .venv/bin/activate` (Linux/macOS) | Igual que arriba, en shells Unix |
+
+Si en Windows `python` no existe, prueba:
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\activate
+```
+
+Si PowerShell bloquea `Activate.ps1`:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Luego vuelve a ejecutar `.venv\Scripts\activate`.
+
+> **Importante:** cada vez que abras una terminal nueva para trabajar en el backend, vuelve a activar el entorno con `activate`.
+
+---
+
+### Paso 2 — Instalar dependencias de Python
+
+```powershell
+pip install -r requirements.txt
+```
+
+| Comando | Por que se usa |
+| --- | --- |
+| `pip install -r requirements.txt` | Lee la lista de paquetes (FastAPI, Uvicorn, SQLAlchemy, PyJWT, Stripe, etc.) e instala versiones fijadas dentro de `.venv` |
+
+Sin este paso, `uvicorn` y los imports de `app/` fallaran.
+
+---
+
+### Paso 3 — Crear el archivo `.env`
+
+```powershell
+copy .env.example .env
+```
+
+**Linux / macOS:**
+
+```bash
+cp .env.example .env
+```
+
+| Comando | Por que se usa |
+| --- | --- |
+| `copy` / `cp .env.example .env` | Copia la plantilla de variables. `.env` no se sube a Git (secretos locales) |
+
+Abre `.env` con un editor y **define al menos** `JWT_SECRET` (minimo 32 caracteres).
+
+Generar un secreto aleatorio:
+
+**PowerShell:**
+
+```powershell
+[guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
+```
+
+**Linux / macOS:**
+
+```bash
+openssl rand -hex 32
+```
+
+Pega el resultado en `.env`:
+
+```env
+JWT_SECRET=pega_aqui_tu_clave_generada
+DATABASE_URL=BDD_CLOUD
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+ENVIRONMENT=development
+```
+
+| Variable | Por que importa |
+| --- | --- |
+| `JWT_SECRET` | Firma las cookies de sesion. **Obligatorio**; sin el la API no arranca |
+| `DATABASE_URL=BDD_CLOUD` | Valor centinela: la app usa SQLite local (`pronostats_dev.db`). Ideal para empezar sin Postgres |
+| `CORS_ORIGINS` | Permite que el frontend (Vite en `:5173`) llame a la API con cookies |
+| `ENVIRONMENT` | `development` desactiva reglas estrictas de produccion (cookies secure, etc.) |
+
+Stripe (`STRIPE_SECRET_KEY`, etc.) es **opcional**: solo hace falta si pruebas depositos con tarjeta. El resto de la app funciona sin Stripe.
+
+Las tablas de la BD se crean **automaticamente** al iniciar el servidor.
+
+---
+
+### Paso 4 — Crear usuarios de prueba
+
+```powershell
+python -m app.seed
+```
+
+| Comando | Por que se usa |
+| --- | --- |
+| `python -m app.seed` | Ejecuta el modulo `app/seed.py` como script: crea (o actualiza) usuarios demo en la BD |
+
+| Rol | Email | Contrasena |
+| --- | --- | --- |
+| Admin | `admin@pronostats.com` | `admin123` |
+| Usuario | `usuario@pronostats.com` | `usuario123` |
+
+Debes tener el entorno virtual **activado** y el `.env` ya configurado antes de este paso.
+
+---
+
+### Paso 5 — (Opcional) Regenerar datasets CSV
+
+Los CSV de futbol ya vienen en `data/dataset_futbol/`. Solo regenera si quieres datos nuevos:
+
+```powershell
+python -m app.generate_dataset
+```
+
+| Comando | Por que se usa |
+| --- | --- |
+| `python -m app.generate_dataset` | Sobrescribe `equipos.csv` y `goles.csv` con un generador determinista (Poisson). No toca la BD |
+
+Tras regenerar, **reinicia** el backend para que vuelva a leer los CSV.
+
+---
+
+### Paso 6 — Arrancar el servidor
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+| Parte del comando | Por que se usa |
+| --- | --- |
+| `uvicorn` | Servidor ASGI que ejecuta aplicaciones FastAPI |
+| `app.main:app` | Modulo `app/main.py`, objeto `app` (la aplicacion FastAPI) |
+| `--reload` | Reinicia solo al detectar cambios en el codigo (desarrollo) |
+
+Deja esta terminal abierta. Deberias ver algo como `Uvicorn running on http://127.0.0.1:8000`.
+
+- API: http://localhost:8000
+- Documentacion interactiva (Swagger): http://localhost:8000/docs
+
+Luego clona/instala el [frontend](https://github.com/ElkinDelgado25/PronoStats-Frontend) y arrancalo en otra terminal.
+
+Para detener el servidor: `Ctrl + C`.
+
+---
+
+## Resumen rapido (copiar y pegar)
 
 ### Windows (PowerShell)
 
 ```powershell
+git clone https://github.com/ElkinDelgado25/PronoStats-backend.git
 cd PronoStats-backend
 
 python -m venv .venv
@@ -24,83 +226,82 @@ python -m venv .venv
 
 pip install -r requirements.txt
 copy .env.example .env
+# Edita .env y pega JWT_SECRET (min. 32 caracteres)
+
+python -m app.seed
+uvicorn app.main:app --reload
 ```
 
 ### Linux / macOS
 
 ```bash
+git clone https://github.com/ElkinDelgado25/PronoStats-backend.git
 cd PronoStats-backend
+
 python3 -m venv .venv
 source .venv/bin/activate
+
 pip install -r requirements.txt
 cp .env.example .env
-```
+# Edita .env y pega JWT_SECRET (openssl rand -hex 32)
 
-### Configurar `.env`
-
-Obligatorio: define `JWT_SECRET` (minimo 32 caracteres).
-
-```powershell
-# PowerShell — generar secreto
-[guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
-```
-
-Ejemplo minimo en `.env`:
-
-```env
-JWT_SECRET=pega_aqui_tu_clave_generada
-DATABASE_URL=BDD_CLOUD
-CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-```
-
-Con `DATABASE_URL=BDD_CLOUD` (o vacio) se usa SQLite local (`pronostats_dev.db`).
-Las tablas se crean automaticamente al iniciar.
-
-### Usuarios de prueba
-
-```bash
 python -m app.seed
-```
-
-| Rol | Email | Contrasena |
-| --- | --- | --- |
-| Admin | admin@pronostats.com | admin123 |
-| Usuario | usuario@pronostats.com | usuario123 |
-
-## Ejecutar
-
-```bash
-# (Opcional) regenerar datasets CSV de futbol
-python -m app.generate_dataset
-
-# Levantar el servidor (relee CSV en cada arranque)
 uvicorn app.main:app --reload
 ```
 
-- API: http://localhost:8000
-- Swagger: http://localhost:8000/docs
-
-Luego inicia el frontend en [PronoStats-Frontend](../PronoStats-Frontend).
+---
 
 ## PostgreSQL opcional (Docker)
 
-```bash
-# Define POSTGRES_PASSWORD en .env
+Por defecto usas SQLite. Si prefieres Postgres local:
+
+1. En `.env` define una contraseña, por ejemplo:
+
+```env
+POSTGRES_PASSWORD=pronostats123
+```
+
+2. Levanta el contenedor:
+
+```powershell
 docker compose up -d
 ```
 
+| Comando | Por que se usa |
+| --- | --- |
+| `docker compose up -d` | Crea y arranca Postgres 16 en segundo plano (`-d`). Puerto host: **15432** |
+
+3. Apunta la app a ese Postgres en `.env`:
+
 ```env
-DATABASE_URL=postgresql+psycopg://pronostats:TU_PASSWORD@127.0.0.1:15432/backend_pronoticos
+DATABASE_URL=postgresql+psycopg://pronostats:pronostats123@127.0.0.1:15432/backend_pronoticos
 ```
+
+(Usa la misma contraseña que `POSTGRES_PASSWORD`.)
+
+4. Reinicia Uvicorn y vuelve a sembrar usuarios:
+
+```powershell
+python -m app.seed
+```
+
+Para parar Postgres: `docker compose down` (los datos del volumen se conservan salvo que uses `-v`).
+
+---
 
 ## Solucion de problemas
 
 | Problema | Solucion |
 | --- | --- |
-| Error al arrancar por JWT | Define `JWT_SECRET` en `.env` |
-| Frontend no conecta | Revisa `CORS_ORIGINS` incluye `http://localhost:5173` |
-| Sin partidos | Verifica que existan `data/dataset_futbol/*.csv` o ejecuta `generate_dataset` |
-| Login falla | Ejecuta `python -m app.seed` |
+| Error al arrancar por JWT | Define `JWT_SECRET` en `.env` (min. 32 caracteres, no vacio ni placeholder) |
+| `ModuleNotFoundError` | Activa `.venv` y vuelve a `pip install -r requirements.txt` |
+| Frontend no conecta / CORS | Revisa que `CORS_ORIGINS` incluye `http://localhost:5173` |
+| Sin partidos en la API | Verifica `data/dataset_futbol/*.csv` o ejecuta `python -m app.generate_dataset` y reinicia |
+| Login falla | Ejecuta `python -m app.seed` con el mismo `DATABASE_URL` que usa el servidor |
+| Puerto 8000 ocupado | `uvicorn app.main:app --reload --port 8001` y actualiza `VITE_API_URL` en el frontend |
+| Docker: falta `POSTGRES_PASSWORD` | Definelo en `.env` antes de `docker compose up -d` |
+
+---
 
 ## Origen de los datos: datasets CSV (data/dataset_futbol/)
 
@@ -181,11 +382,11 @@ porcentaje_de_acierto (precision) = aciertos / total_de_partidos_finalizados
 El endpoint `GET /stats/model-performance` devuelve `aciertos`, `fallos`,
 `precision` (0..1) y una `tendencia` acumulada agregada por dia.
 
-## Base de datos (solo autenticacion)
+## Base de datos (solo autenticacion y cartera)
 
-La BD (SQLAlchemy) se usa solo para usuarios/auth. Configura `DATABASE_URL` en
-`.env`; si conserva el valor `BDD_CLOUD` (o vacio), se usa SQLite local
-(`pronostats_dev.db`). Las tablas se crean automaticamente al iniciar.
+La BD (SQLAlchemy) se usa para usuarios/auth, boletos, combinadas y cartera.
+Configura `DATABASE_URL` en `.env`; si conserva el valor `BDD_CLOUD` (o vacio),
+se usa SQLite local (`pronostats_dev.db`). Las tablas se crean automaticamente al iniciar.
 
 ## Seguridad de despliegue
 
@@ -235,15 +436,19 @@ app/
   main.py              # App FastAPI + routers + CORS + carga CSV en lifespan
   csv_store.py         # Proveedor de datos CSV en memoria (ligas/equipos/partidos/predicciones/metricas)
   generate_dataset.py  # Generador determinista de los CSV
+  seed.py              # Usuarios y datos de ejemplo en BD
   core/                # config (settings) y seguridad (JWT)
-  db/                  # engine, session, Base (solo auth)
-  models/              # SQLAlchemy: usuario, liga, equipo, partido, resultado, prediccion, favorito
+  db/                  # engine, session, Base
+  models/              # SQLAlchemy: usuario, liga, equipo, partido, resultado, prediccion, favorito, boleto, cartera
   schemas/             # Pydantic (contrato de la API)
-  api/                 # routers: auth, leagues, teams, matches, predictions, favorites, stats, admin
-  services/            # prediction_engine (compute_prediction), evaluation, team_stats
+  api/                 # routers: auth, leagues, teams, matches, predictions, favorites, stats, admin, boletos, ...
+  services/            # prediction_engine, evaluation, team_stats, combinadas, wallet, stripe
 data/
   dataset_futbol/
     equipos.csv        # equipos de las ligas principales de America
     goles.csv          # partidos finalizados + programados
-alembic/               # migraciones (auth)
+alembic/               # migraciones
+docker-compose.yml     # Postgres opcional
+.env.example           # Plantilla de variables de entorno
+requirements.txt       # Dependencias Python
 ```
