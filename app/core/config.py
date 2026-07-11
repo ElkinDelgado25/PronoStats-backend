@@ -43,6 +43,14 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Stripe (cartera)
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_currency: str = "usd"
+    stripe_min_deposit: float = 5.0
+    frontend_url: str = "http://localhost:5173"
+    stripe_allow_confirm_fallback: bool = True
+
     # Motor de pronostico
     prediction_model_version: str = "rules-v1"
     prediction_recent_form_matches: int = 5
@@ -91,6 +99,14 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+    @property
+    def stripe_enabled(self) -> bool:
+        return bool(self.stripe_secret_key.startswith("sk_"))
+
+    @property
+    def stripe_confirm_fallback_enabled(self) -> bool:
+        return not self.is_production and self.stripe_allow_confirm_fallback
 
 
 @lru_cache

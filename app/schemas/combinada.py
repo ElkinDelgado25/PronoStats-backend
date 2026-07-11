@@ -53,6 +53,9 @@ class SubCombinadaOut(BaseModel):
     probabilidad: float
     importe: float
     ganancia_potencial: float
+    beneficio_neto: float = Field(
+        description="Ganancia neta de esta sub-combinacion si acierta (retorno - importe)"
+    )
 
 
 class CombinadaCalcularOut(BaseModel):
@@ -61,8 +64,13 @@ class CombinadaCalcularOut(BaseModel):
     cuota_combinada: float | None = None
     probabilidad_combinada: float | None = None
     num_pronosticos: int
-    valor_total: float
-    ganancia_potencial: float
+    valor_total: float = Field(description="Total a pagar (apuesta total del cupon)")
+    ganancia_potencial: float = Field(
+        description="Retorno bruto si aciertan todas las apuestas del escenario maximo"
+    )
+    beneficio_neto: float = Field(
+        description="Ganancia neta en escenario maximo (retorno - valor_total)"
+    )
     sub_combinaciones: list[SubCombinadaOut] = []
     advertencias: list[str] = []
 

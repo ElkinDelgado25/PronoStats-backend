@@ -44,7 +44,27 @@ class BoletoConsultaOut(BoletoOut):
 
 class DepositoIn(BaseModel):
     monto: float = Field(gt=0, le=10000)
-    metodo: str = Field(default="mock", description="mock | stripe (futuro)")
+    metodo: str = Field(default="mock", description="mock | stripe (solo mock directo; stripe usa checkout)")
+
+
+class StripeCheckoutIn(BaseModel):
+    monto: float = Field(gt=0, le=10000)
+
+
+class StripeCheckoutOut(BaseModel):
+    url: str
+    session_id: str
+
+
+class StripeConfirmIn(BaseModel):
+    session_id: str = Field(min_length=3, max_length=120)
+
+
+class StripeConfirmOut(BaseModel):
+    monto: float
+    saldo_despues: float
+    ya_acreditado: bool
+    mensaje: str
 
 
 class MovimientoOut(BaseModel):

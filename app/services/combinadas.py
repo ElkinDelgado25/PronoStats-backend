@@ -248,6 +248,10 @@ def _combinaciones_sistema(n: int, k: int) -> list[tuple[int, ...]]:
     return list(itertools.combinations(range(n), k))
 
 
+def _beneficio_neto(retorno: float, apuesta: float) -> float:
+    return round(retorno - apuesta, 2)
+
+
 def calcular_combinada(payload: CombinadaCalcularIn) -> CombinadaCalcularOut:
     legs = [_resolver_leg(s) for s in payload.selecciones]
     _validar_duplicados(legs)
@@ -262,12 +266,14 @@ def calcular_combinada(payload: CombinadaCalcularIn) -> CombinadaCalcularOut:
                 detail="El importe debe ser mayor a 0 para apuestas individuales",
             )
         ganancia = sum(importe * s.cuota for s in selecciones_out)
+        valor_total = round(importe * len(selecciones_out), 2)
         return CombinadaCalcularOut(
             tipo=payload.tipo,
             selecciones=selecciones_out,
             num_pronosticos=len(selecciones_out),
-            valor_total=round(importe * len(selecciones_out), 2),
+            valor_total=valor_total,
             ganancia_potencial=round(ganancia, 2),
+            beneficio_neto=_beneficio_neto(ganancia, valor_total),
             advertencias=advertencias,
         )
 
@@ -279,14 +285,17 @@ def calcular_combinada(payload: CombinadaCalcularIn) -> CombinadaCalcularOut:
                 detail="El importe debe ser mayor a 0 para apuesta multiple",
             )
         prob, cuota = _calcular_multiple(legs)
+        valor_total = round(importe, 2)
+        retorno = round(importe * cuota, 2)
         return CombinadaCalcularOut(
             tipo=payload.tipo,
             selecciones=selecciones_out,
             cuota_combinada=cuota,
             probabilidad_combinada=prob,
             num_pronosticos=1,
-            valor_total=round(importe, 2),
-            ganancia_potencial=round(importe * cuota, 2),
+            valor_total=valor_total,
+            ganancia_potencial=retorno,
+            beneficio_neto=_beneficio_neto(retorno, valor_total),
             advertencias=advertencias,
         )
 
@@ -319,18 +328,20 @@ def calcular_combinada(payload: CombinadaCalcularIn) -> CombinadaCalcularOut:
                 probabilidad=prob,
                 importe=round(importe_combo, 2),
                 ganancia_potencial=round(importe_combo * cuota, 2),
+                beneficio_neto=_beneficio_neto(importe_combo * cuota, importe_combo),
             )
         )
 
     num_combos = len(sub_combinaciones)
+    valor_total = round(importe_combo * num_combos, 2)
+    retorno_max = round(sum(s.ganancia_potencial for s in sub_combinaciones), 2)
     return CombinadaCalcularOut(
         tipo=payload.tipo,
         selecciones=selecciones_out,
         num_pronosticos=num_combos,
-        valor_total=round(importe_combo * num_combos, 2),
-        ganancia_potencial=round(
-            sum(s.ganancia_potencial for s in sub_combinaciones), 2
-        ),
+        valor_total=valor_total,
+        ganancia_potencial=retorno_max,
+        beneficio_neto=_beneficio_neto(retorno_max, valor_total),
         sub_combinaciones=sub_combinaciones,
         advertencias=advertencias
         + [f"Sistema {k}/{len(legs)}: {num_combos} combinaciones generadas"],

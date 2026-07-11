@@ -43,7 +43,7 @@ def depositar(
     if metodo == MetodoPago.stripe:
         raise HTTPException(
             status_code=501,
-            detail="Pagos con Stripe aun no implementados. Use metodo mock por ahora.",
+            detail="Usa POST /wallet/stripe/checkout-session para pagar con Stripe.",
         )
 
     cartera = obtener_o_crear_cartera(db, usuario)

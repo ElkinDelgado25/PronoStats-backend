@@ -1,3 +1,4 @@
+import secrets
 from time import monotonic
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -21,15 +22,21 @@ from app.schemas.auth import (
     ForgotPasswordResponse,
     LoginRequest,
     RegistroRequest,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
     TokenOut,
     UsuarioOut,
+    VerifyResetCodeRequest,
+    VerifyResetCodeResponse,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 FAILED_LOGIN_LIMIT = 5
 FAILED_LOGIN_WINDOW_SECONDS = 300
+RESET_CODE_EXPIRY_SECONDS = 900
 _failed_login_attempts: dict[str, list[float]] = {}
+_reset_codes: dict[str, dict[str, float | str | bool]] = {}
 
 
 def _get_user_by_email(db: Session, email: str) -> Usuario | None:
@@ -72,6 +79,39 @@ def _record_failed_login(key: str) -> None:
 
 def _clear_failed_login(key: str) -> None:
     _failed_login_attempts.pop(key, None)
+
+
+def _generate_reset_code() -> str:
+    return f"{secrets.randbelow(1_000_000):06d}"
+
+
+def _store_reset_code(email: str) -> str:
+    code = _generate_reset_code()
+    _reset_codes[email] = {
+        "code": code,
+        "expires": monotonic() + RESET_CODE_EXPIRY_SECONDS,
+        "verified": False,
+    }
+    return code
+
+
+def _get_reset_entry(email: str) -> dict[str, float | str | bool] | None:
+    entry = _reset_codes.get(email)
+    if entry is None:
+        return None
+    if monotonic() > float(entry["expires"]):
+        _reset_codes.pop(email, None)
+        return None
+    return entry
+
+
+def _validate_reset_code(email: str, codigo: str, *, mark_verified: bool = False) -> bool:
+    entry = _get_reset_entry(email)
+    if entry is None or str(entry["code"]) != codigo:
+        return False
+    if mark_verified:
+        entry["verified"] = True
+    return True
 
 
 def _session_response(response: Response, usuario: Usuario) -> AuthSessionOut:
@@ -151,15 +191,71 @@ def login_form(
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
 def forgot_password(
     payload: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
 ) -> ForgotPasswordResponse:
-    """HU-03: Solicitud de recuperacion de contrasena.
+    """HU-03: Genera un codigo de verificacion para recuperar la contrasena."""
+    email = payload.email.lower()
+    usuario = _get_user_by_email(db, email)
+    if usuario is None:
+        return ForgotPasswordResponse(
+            mensaje="Si el correo existe, se genero un codigo de verificacion.",
+        )
 
-    Por seguridad siempre responde igual exista o no el correo. En un entorno
-    real se enviaria un email con un token de un solo uso y expiracion corta.
-    """
+    codigo = _store_reset_code(email)
     return ForgotPasswordResponse(
-        mensaje="Si el correo existe, se enviaron instrucciones de recuperacion.",
+        mensaje=(
+            "Codigo generado. Copia el numero de abajo, verificalo en esta misma "
+            "pagina y luego establece tu nueva contrasena."
+        ),
+        codigo_verificacion=codigo,
     )
+
+
+@router.post("/verify-reset-code", response_model=VerifyResetCodeResponse)
+def verify_reset_code(payload: VerifyResetCodeRequest) -> VerifyResetCodeResponse:
+    """HU-03: Verifica el codigo de recuperacion antes de cambiar la contrasena."""
+    email = payload.email.lower()
+    if not _validate_reset_code(email, payload.codigo, mark_verified=True):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Codigo invalido o expirado",
+        )
+    return VerifyResetCodeResponse(
+        valido=True,
+        mensaje="Codigo verificado. Ya puedes establecer tu nueva contrasena.",
+    )
+
+
+@router.post("/reset-password", response_model=ResetPasswordResponse)
+def reset_password(
+    payload: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+) -> ResetPasswordResponse:
+    """HU-03: Restablece la contrasena tras verificar el codigo."""
+    email = payload.email.lower()
+    entry = _get_reset_entry(email)
+    if entry is None or str(entry["code"]) != payload.codigo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Codigo invalido o expirado",
+        )
+    if not bool(entry.get("verified")):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Debes verificar el codigo antes de cambiar la contrasena",
+        )
+
+    usuario = _get_user_by_email(db, email)
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    usuario.password_hash = hash_password(payload.password)
+    db.commit()
+    _reset_codes.pop(email, None)
+    return ResetPasswordResponse(mensaje="Contrasena actualizada correctamente.")
 
 
 @router.get("/me", response_model=UsuarioOut)

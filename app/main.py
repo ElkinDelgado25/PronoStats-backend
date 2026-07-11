@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import re
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
@@ -16,6 +17,7 @@ from app.api import (
     matches,
     predictions,
     stats,
+    stripe_wallet,
     teams,
 )
 from app.core.config import settings
@@ -27,6 +29,7 @@ from app.db.session import engine
 import app.models  # noqa: F401
 
 CSRF_PROTECTED_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+DEV_ORIGIN_PATTERN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 
 def _origin_from_request(request: Request) -> str | None:
@@ -41,6 +44,14 @@ def _origin_from_request(request: Request) -> str | None:
     if not parsed.scheme or not parsed.netloc:
         return None
     return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def _is_allowed_origin(origin: str) -> bool:
+    if origin in settings.cors_origins_list:
+        return True
+    if not settings.is_production:
+        return bool(re.fullmatch(DEV_ORIGIN_PATTERN, origin))
+    return False
 
 
 @asynccontextmanager
@@ -68,7 +79,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=settings.cors_origins_list if settings.is_production else [],
+    allow_origin_regex=None if settings.is_production else DEV_ORIGIN_PATTERN,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
@@ -82,7 +94,7 @@ async def csrf_origin_guard(request: Request, call_next):
         and request.cookies.get(settings.jwt_cookie_name)
     ):
         origin = _origin_from_request(request)
-        if origin and origin not in settings.cors_origins_list:
+        if origin and not _is_allowed_origin(origin):
             return JSONResponse(
                 status_code=403,
                 content={"detail": "Origen no permitido para esta sesion"},
@@ -96,6 +108,7 @@ app.include_router(matches.router)
 app.include_router(predictions.router)
 app.include_router(combinadas.router)
 app.include_router(boletos.router)
+app.include_router(stripe_wallet.router)
 app.include_router(favorites.router)
 app.include_router(analysis_history.router)
 app.include_router(stats.router)
