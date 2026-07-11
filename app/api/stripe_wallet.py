@@ -5,6 +5,8 @@ from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models.usuario import Usuario
 from app.schemas.boleto import (
+    RecargaIn,
+    RecargaOut,
     StripeCheckoutIn,
     StripeCheckoutOut,
     StripeConfirmIn,
@@ -16,8 +18,76 @@ from app.services.stripe_payments import (
     procesar_webhook,
 )
 from app.core.config import settings
+from app.models.cartera import MetodoPago
+from app.services.wallet import depositar, registrar_intento_recarga
 
 router = APIRouter(tags=["stripe-cartera"])
+
+
+@router.post("/wallet/recharge", response_model=RecargaOut)
+def recargar_cartera(
+    payload: RecargaIn,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+) -> RecargaOut:
+    """Inicia una recarga validada entre $5 y $500."""
+    metodo = MetodoPago(payload.payment_method)
+
+    if metodo == MetodoPago.mock:
+        if settings.is_production:
+            return RecargaOut(
+                status="error",
+                message="Las recargas mock solo estan disponibles en desarrollo.",
+            )
+        mov = depositar(db, current_user, payload.amount, metodo=metodo)
+        return RecargaOut(
+            status="success",
+            message=f"Recarga de ${mov.monto:.2f} acreditada correctamente.",
+        )
+
+    if metodo == MetodoPago.transfer:
+        registrar_intento_recarga(
+            db,
+            current_user,
+            payload.amount,
+            metodo,
+            estado="pendiente",
+            descripcion="Esperando comprobacion de la transferencia.",
+        )
+        return RecargaOut(
+            status="pending",
+            message=(
+                "Transferencia pendiente. Realiza la transferencia por "
+                f"${payload.amount:.2f} y envia el comprobante a soporte."
+            ),
+        )
+
+    # Se registra antes de contactar Stripe para conservar el intento incluso
+    # si el proveedor no esta configurado o la conexion falla.
+    registrar_intento_recarga(
+        db,
+        current_user,
+        payload.amount,
+        metodo,
+        estado="pendiente",
+        descripcion="Checkout de Stripe solicitado.",
+    )
+    try:
+        checkout = crear_checkout_session(current_user, payload.amount)
+    except Exception as exc:
+        # Las excepciones conocidas de Stripe/FastAPI tienen un mensaje seguro
+        # para el usuario; las demas no exponen detalles internos.
+        detail = getattr(exc, "detail", None)
+        return RecargaOut(
+            status="error",
+            message=str(detail or "No se pudo iniciar el pago con Stripe. Intenta nuevamente."),
+        )
+
+    return RecargaOut(
+        status="pending",
+        redirect_url=checkout.url or None,
+        message="Redirigiendo a Stripe para completar la recarga.",
+    )
 
 
 @router.post("/wallet/stripe/checkout-session", response_model=StripeCheckoutOut)

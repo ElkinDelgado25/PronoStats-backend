@@ -40,7 +40,12 @@ def depositar(
 ) -> MovimientoCartera:
     if monto <= 0:
         raise HTTPException(status_code=400, detail="El monto debe ser mayor a 0")
-    if metodo == MetodoPago.stripe:
+    if metodo == MetodoPago.mock and settings.is_production:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Las recargas mock solo estan disponibles en desarrollo.",
+        )
+    if metodo == MetodoPago.stripe and not referencia_externa:
         raise HTTPException(
             status_code=501,
             detail="Usa POST /wallet/stripe/checkout-session para pagar con Stripe.",
@@ -56,6 +61,35 @@ def depositar(
         descripcion=f"Deposito ({metodo.value})",
         metodo_pago=metodo,
         referencia_externa=referencia_externa,
+    )
+    db.add(mov)
+    db.commit()
+    db.refresh(mov)
+    return mov
+
+
+def registrar_intento_recarga(
+    db: Session,
+    usuario: Usuario,
+    monto: float,
+    metodo: MetodoPago,
+    *,
+    estado: str,
+    descripcion: str,
+) -> MovimientoCartera:
+    """Deja trazabilidad de una recarga que aun no modifica el saldo.
+
+    Stripe y las transferencias se acreditan despues de una confirmacion externa,
+    por eso el movimiento conserva el saldo actual y un monto contable de cero.
+    """
+    cartera = obtener_o_crear_cartera(db, usuario)
+    mov = MovimientoCartera(
+        cartera_id=cartera.id,
+        tipo=TipoMovimiento.ajuste,
+        monto=0.0,
+        saldo_despues=cartera.saldo,
+        descripcion=f"Recarga {metodo.value} {estado}: ${monto:.2f}. {descripcion}",
+        metodo_pago=metodo,
     )
     db.add(mov)
     db.commit()

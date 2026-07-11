@@ -21,6 +21,7 @@ class TipoMovimiento(str, enum.Enum):
 class MetodoPago(str, enum.Enum):
     mock = "mock"
     stripe = "stripe"
+    transfer = "transfer"
 
 
 class Cartera(Base):

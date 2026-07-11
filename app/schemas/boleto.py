@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field, computed_field
 
@@ -65,6 +66,19 @@ class StripeConfirmOut(BaseModel):
     saldo_despues: float
     ya_acreditado: bool
     mensaje: str
+
+
+class RecargaIn(BaseModel):
+    """Solicitud de recarga desde la pantalla de cartera."""
+
+    amount: float = Field(ge=5, le=500)
+    payment_method: Literal["stripe", "transfer", "mock"]
+
+
+class RecargaOut(BaseModel):
+    status: Literal["pending", "success", "error"]
+    redirect_url: str | None = None
+    message: str
 
 
 class MovimientoOut(BaseModel):

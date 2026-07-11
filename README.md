@@ -428,6 +428,9 @@ Autenticacion y administracion (base de datos):
 | GET | `/favorites` `POST` `DELETE` | Favoritos del usuario | HU-13 |
 | GET/POST/DELETE | `/analysis-history` | Historial de analisis consultados | HU-14 |
 | POST/PUT/DELETE | `/admin/...` | CRUD administrativo (BD) | HU-15, HU-16, HU-17 |
+| POST | `/wallet/recharge` | Recarga validada ($5-$500): `stripe`, `transfer` o `mock` en desarrollo | Cartera |
+| GET | `/wallet/balance` | Saldo actual de la cartera autenticada | Cartera |
+| GET | `/wallet/transactions` | Movimientos recientes de la cartera autenticada | Cartera |
 
 > Nota: los endpoints de datos deportivos leen del CSV; los de `/admin` operan
 > sobre la BD y son independientes del dataset CSV.

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -50,6 +50,27 @@ def ver_cartera(
         saldo=cartera.saldo,
         movimientos=[MovimientoOut.model_validate(m) for m in movs],
     )
+
+
+@router.get("/wallet/balance")
+def obtener_saldo(
+    db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)
+) -> dict[str, float]:
+    """Saldo actual, pensado para refrescar la cartera tras una recarga."""
+    cartera = obtener_o_crear_cartera(db, current_user)
+    return {"balance": cartera.saldo}
+
+
+@router.get("/wallet/transactions", response_model=list[MovimientoOut])
+def listar_movimientos(
+    limit: int = Query(default=20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+) -> list[MovimientoOut]:
+    """Movimientos de cartera ordenados desde el mas reciente."""
+    cartera = obtener_o_crear_cartera(db, current_user)
+    movs = sorted(cartera.movimientos, key=lambda m: m.creado_en, reverse=True)[:limit]
+    return [MovimientoOut.model_validate(m) for m in movs]
 
 
 @router.post("/wallet/depositos", response_model=MovimientoOut)
