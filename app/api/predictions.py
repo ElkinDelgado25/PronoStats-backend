@@ -1,12 +1,28 @@
+from datetime import date
+
 from fastapi import APIRouter, HTTPException, Query
 
 from app.csv_store import store
 from app.schemas.prediccion import PrediccionCategoriaOut, PrediccionOut, PrediccionesPartidoOut
 
-router = APIRouter(prefix="/matches", tags=["pronosticos"])
+router = APIRouter(tags=["pronosticos"])
 
 
-@router.get("/{partido_id}/prediction", response_model=PrediccionOut)
+@router.get("/predictions", response_model=list[PrediccionOut])
+def listar_predicciones(
+    league_id: int | None = Query(default=None),
+    fecha: date | None = Query(default=None),
+    estado: str | None = Query(default=None),
+) -> list:
+    """Catalogo publico de pronosticos 1X2, con los filtros de /matches."""
+    return store.get_predicciones_publicas(
+        liga_id=league_id,
+        fecha=fecha,
+        estado=estado,
+    )
+
+
+@router.get("/matches/{partido_id}/prediction", response_model=PrediccionOut)
 def obtener_prediccion(partido_id: int):
     """HU-07, HU-08 y HU-09: pronostico 1X2 con estadisticas y confianza.
 
@@ -20,7 +36,7 @@ def obtener_prediccion(partido_id: int):
     return pred
 
 
-@router.get("/{partido_id}/predictions", response_model=PrediccionesPartidoOut)
+@router.get("/matches/{partido_id}/predictions", response_model=PrediccionesPartidoOut)
 def obtener_predicciones(
     partido_id: int,
     categoria: str | None = Query(default=None, description="Filtrar por categoria de apuesta"),

@@ -12,11 +12,13 @@ from app.api import (
     auth,
     boletos,
     combinadas,
+    countries,
     favorites,
     leagues,
     matches,
     predictions,
     stats,
+    statistics,
     stripe_wallet,
     teams,
 )
@@ -103,6 +105,7 @@ async def csrf_origin_guard(request: Request, call_next):
 
 app.include_router(auth.router)
 app.include_router(leagues.router)
+app.include_router(countries.router)
 app.include_router(teams.router)
 app.include_router(matches.router)
 app.include_router(predictions.router)
@@ -112,6 +115,7 @@ app.include_router(stripe_wallet.router)
 app.include_router(favorites.router)
 app.include_router(analysis_history.router)
 app.include_router(stats.router)
+app.include_router(statistics.router)
 app.include_router(admin.router)
 
 

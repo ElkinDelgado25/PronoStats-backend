@@ -145,7 +145,9 @@ Datos deportivos servidos desde el proveedor CSV:
 | Metodo | Ruta | Descripcion | HU |
 | --- | --- | --- | --- |
 | GET | `/leagues` | Listar ligas | HU-04 |
+| GET | `/countries` | Listar paises disponibles | HU-04 |
 | GET | `/matches` | Catalogo de partidos (filtros liga/fecha/estado) | HU-04, HU-05 |
+| GET | `/predictions` | Catalogo publico de pronosticos 1X2 | HU-07 |
 | GET | `/matches/{id}` | Detalle de partido | HU-04 |
 | GET | `/matches/{id}/h2h` | Historial entre equipos | HU-06 |
 | GET | `/matches/{id}/prediction` | Pronostico 1X2 + factores + confianza | HU-07, HU-08, HU-09 |
@@ -153,6 +155,7 @@ Datos deportivos servidos desde el proveedor CSV:
 | GET | `/teams/{id}/stats` | Estadisticas historicas de un equipo | HU-12 |
 | GET | `/teams/compare` | Comparar dos equipos por estadisticas e historial directo | HU-11 |
 | GET | `/stats/model-performance` | Aciertos vs fallos (porcentaje de acierto) | Panel metricas |
+| GET | `/statistics` | Metricas publicas del modelo para el dashboard | Panel metricas |
 
 Autenticacion y administracion (base de datos):
 

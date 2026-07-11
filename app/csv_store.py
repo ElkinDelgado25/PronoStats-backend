@@ -292,6 +292,10 @@ class CsvStore:
     def get_ligas(self) -> list[LigaDTO]:
         return sorted(self.ligas, key=lambda l: l.nombre)
 
+    def get_paises(self) -> list[str]:
+        """Paises con al menos una liga disponible en el catalogo publico."""
+        return sorted({liga.pais for liga in self.ligas})
+
     def get_liga(self, liga_id: int) -> LigaDTO | None:
         for liga in self.ligas:
             if liga.id == liga_id:
@@ -327,6 +331,19 @@ class CsvStore:
 
     def get_prediccion(self, partido_id: int) -> PrediccionDTO | None:
         return self._predicciones.get(partido_id)
+
+    def get_predicciones_publicas(
+        self,
+        liga_id: int | None = None,
+        fecha=None,
+        estado: str | None = None,
+    ) -> list[PrediccionDTO]:
+        """Lista los pronosticos 1X2 asociados a los partidos filtrados."""
+        return [
+            self._predicciones[partido.id]
+            for partido in self.get_partidos(liga_id=liga_id, fecha=fecha, estado=estado)
+            if partido.id in self._predicciones
+        ]
 
     def get_predicciones(
         self, partido_id: int, categoria: str | None = None
