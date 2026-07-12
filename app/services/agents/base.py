@@ -43,6 +43,38 @@ class AgentResult:
     factores: list[dict] = field(default_factory=list)
 
 
+def apply_overround(result: AgentResult, margin: float) -> AgentResult:
+    """Aplica el margen comercial (overround) a las probabilidades de una prediccion.
+
+    Aumenta las probabilidades individuales por (1 + overround) y las clampa entre 0.01 y 0.99.
+    Mantiene la probabilidad implicita relativa y recalcula la confianza del pronostico.
+    """
+    adjusted_probs = {}
+    for key, val in result.probabilidades.items():
+        adjusted_val = val * (1.0 + margin)
+        adjusted_probs[key] = round(min(max(adjusted_val, 0.01), 0.99), 4)
+
+    adjusted_confianza = result.confianza
+    if result.pronostico in adjusted_probs:
+        adjusted_confianza = adjusted_probs[result.pronostico]
+    else:
+        normalized_pick = result.pronostico.replace(".", "_")
+        if normalized_pick in adjusted_probs:
+            adjusted_confianza = adjusted_probs[normalized_pick]
+        else:
+            adjusted_confianza = round(min(max(result.confianza * (1.0 + margin), 0.01), 0.99), 4)
+
+    return AgentResult(
+        categoria=result.categoria,
+        pronostico=result.pronostico,
+        confianza=adjusted_confianza,
+        probabilidades=adjusted_probs,
+        modelo_version=result.modelo_version,
+        factores=result.factores,
+    )
+
+
+
 class PredictionAgent(Protocol):
     categoria: str
 

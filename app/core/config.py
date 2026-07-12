@@ -55,6 +55,7 @@ class Settings(BaseSettings):
     prediction_model_version: str = "rules-v1"
     prediction_recent_form_matches: int = 5
     prediction_home_advantage: float = 0.15
+    prediction_overround_margin: float = 0.07
 
     @model_validator(mode="after")
     def validate_security_settings(self) -> "Settings":
@@ -78,7 +79,10 @@ class Settings(BaseSettings):
             raise ValueError("JWT_COOKIE_SECURE debe ser true en produccion")
         if self.jwt_cookie_samesite == "none" and not self.effective_jwt_cookie_secure:
             raise ValueError("JWT_COOKIE_SAMESITE=none requiere JWT_COOKIE_SECURE=true")
+        if not (0.05 <= self.prediction_overround_margin <= 0.08):
+            raise ValueError("PREDICTION_OVERROUND_MARGIN debe estar entre 0.05 y 0.08")
         return self
+
 
     @property
     def is_production(self) -> bool:

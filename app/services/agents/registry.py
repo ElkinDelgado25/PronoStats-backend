@@ -1,4 +1,5 @@
-from app.services.agents.base import AgentContext, AgentResult, PredictionAgent
+from app.core.config import settings
+from app.services.agents.base import AgentContext, AgentResult, PredictionAgent, apply_overround
 from app.services.agents.btts import btts_agent
 from app.services.agents.first_scorer import first_scorer_agent
 from app.services.agents.goal_timing import goal_timing_agent
@@ -21,4 +22,9 @@ def get_agent(categoria: str) -> PredictionAgent | None:
 
 
 def run_all_agents(ctx: AgentContext) -> dict[str, AgentResult]:
-    return {agent.categoria: agent.predict(ctx) for agent in AGENTS}
+    margin = settings.prediction_overround_margin
+    return {
+        agent.categoria: apply_overround(agent.predict(ctx), margin)
+        for agent in AGENTS
+    }
+
