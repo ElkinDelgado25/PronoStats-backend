@@ -239,9 +239,12 @@ def _advertencias(legs: list[LegResuelto]) -> list[str]:
 
 
 def _calcular_multiple(legs: list[LegResuelto]) -> tuple[float, float]:
-    prob = math.prod(leg.probabilidad for leg in legs)
-    cuota = _prob_a_cuota(prob)
-    return round(prob, 4), cuota
+    # Calcular la cuota combinada multiplicando las cuotas individuales de cada selección (estilo Ecuabet)
+    cuota = math.prod(_prob_a_cuota(leg.probabilidad) for leg in legs)
+    # Limitar la cuota combinada a un máximo estándar de 5000.00 para evitar desbordamientos
+    cuota_limitada = min(cuota, 5000.0)
+    prob = round(1 / cuota_limitada, 4)
+    return prob, round(cuota_limitada, 2)
 
 
 def _combinaciones_sistema(n: int, k: int) -> list[tuple[int, ...]]:
