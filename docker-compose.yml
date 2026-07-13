@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: backend_pronoticos_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-backend_pronoticos}
+      POSTGRES_USER: ${POSTGRES_USER:-pronostats}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - backend_pronoticos_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  backend_pronoticos_data:

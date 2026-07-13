@@ -1,0 +1,49 @@
+equipo_id,nombre,liga,pais,fuerza
+1,River Plate,Liga Profesional,Argentina,0.84
+2,Boca Juniors,Liga Profesional,Argentina,0.80
+3,Racing Club,Liga Profesional,Argentina,0.74
+4,Independiente,Liga Profesional,Argentina,0.66
+5,San Lorenzo,Liga Profesional,Argentina,0.62
+6,Estudiantes,Liga Profesional,Argentina,0.68
+7,Velez Sarsfield,Liga Profesional,Argentina,0.70
+8,Talleres,Liga Profesional,Argentina,0.64
+9,Flamengo,Brasileirao Serie A,Brasil,0.86
+10,Palmeiras,Brasileirao Serie A,Brasil,0.85
+11,Corinthians,Brasileirao Serie A,Brasil,0.72
+12,Sao Paulo,Brasileirao Serie A,Brasil,0.74
+13,Fluminense,Brasileirao Serie A,Brasil,0.70
+14,Gremio,Brasileirao Serie A,Brasil,0.68
+15,Internacional,Brasileirao Serie A,Brasil,0.69
+16,Atletico Mineiro,Brasileirao Serie A,Brasil,0.76
+17,America,Liga MX,Mexico,0.82
+18,Guadalajara,Liga MX,Mexico,0.70
+19,Cruz Azul,Liga MX,Mexico,0.76
+20,Monterrey,Liga MX,Mexico,0.78
+21,Tigres UANL,Liga MX,Mexico,0.79
+22,Pumas UNAM,Liga MX,Mexico,0.66
+23,Toluca,Liga MX,Mexico,0.72
+24,Leon,Liga MX,Mexico,0.68
+25,LDU Quito,LigaPro Serie A,Ecuador,0.78
+26,Barcelona SC,LigaPro Serie A,Ecuador,0.74
+27,Emelec,LigaPro Serie A,Ecuador,0.66
+28,Independiente del Valle,LigaPro Serie A,Ecuador,0.80
+29,Aucas,LigaPro Serie A,Ecuador,0.62
+30,Deportivo Cuenca,LigaPro Serie A,Ecuador,0.58
+31,Delfin,LigaPro Serie A,Ecuador,0.60
+32,Universidad Catolica,LigaPro Serie A,Ecuador,0.61
+33,Atletico Nacional,Categoria Primera A,Colombia,0.80
+34,Millonarios,Categoria Primera A,Colombia,0.74
+35,America de Cali,Categoria Primera A,Colombia,0.72
+36,Deportivo Cali,Categoria Primera A,Colombia,0.66
+37,Junior,Categoria Primera A,Colombia,0.73
+38,Santa Fe,Categoria Primera A,Colombia,0.68
+39,Deportes Tolima,Categoria Primera A,Colombia,0.70
+40,Once Caldas,Categoria Primera A,Colombia,0.62
+41,LA Galaxy,MLS,Estados Unidos,0.72
+42,LAFC,MLS,Estados Unidos,0.78
+43,Inter Miami,MLS,Estados Unidos,0.80
+44,Seattle Sounders,MLS,Estados Unidos,0.74
+45,Atlanta United,MLS,Estados Unidos,0.70
+46,Portland Timbers,MLS,Estados Unidos,0.66
+47,NYCFC,MLS,Estados Unidos,0.71
+48,Austin FC,MLS,Estados Unidos,0.64
