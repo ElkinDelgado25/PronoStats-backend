@@ -287,13 +287,19 @@ def calcular_combinada(payload: CombinadaCalcularIn) -> CombinadaCalcularOut:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El importe debe ser mayor a 0 para apuesta multiple",
             )
-        prob, cuota = _calcular_multiple(legs)
+        # Un solo calculo: (importe x cuota_i) por cada seleccion, luego se suman.
+        # Ejemplo: 10x3.75 + 10x1.15 = 37.5 + 11.5 = 49. No se reutiliza el 37.5
+        # para volver a multiplicar por la siguiente cuota.
+        # Sigue exigiendo que todas acierten; el pago es un solo importe.
+        retorno = round(sum(importe * s.cuota for s in selecciones_out), 2)
+        cuota_efectiva = round(sum(s.cuota for s in selecciones_out), 2)
+        probs = [min(max(leg.probabilidad, 0.01), 0.99) for leg in legs]
+        prob = round(math.prod(probs), 4)
         valor_total = round(importe, 2)
-        retorno = round(importe * cuota, 2)
         return CombinadaCalcularOut(
             tipo=payload.tipo,
             selecciones=selecciones_out,
-            cuota_combinada=cuota,
+            cuota_combinada=cuota_efectiva,
             probabilidad_combinada=prob,
             num_pronosticos=1,
             valor_total=valor_total,
