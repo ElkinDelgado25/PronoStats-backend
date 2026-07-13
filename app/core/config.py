@@ -75,8 +75,8 @@ class Settings(BaseSettings):
             raise ValueError("JWT_COOKIE_SAMESITE debe ser lax, strict o none")
         if "*" in self.cors_origins_list:
             raise ValueError("CORS_ORIGINS no puede usar '*' con cookies de sesion")
-        if self.is_production and self.jwt_cookie_secure is False:
-            raise ValueError("JWT_COOKIE_SECURE debe ser true en produccion")
+        # JWT_COOKIE_SECURE=false se permite tambien en production para HTTP.
+        # En Cloud Run / Render (HTTPS) usa JWT_COOKIE_SECURE=true.
         if self.jwt_cookie_samesite == "none" and not self.effective_jwt_cookie_secure:
             raise ValueError("JWT_COOKIE_SAMESITE=none requiere JWT_COOKIE_SECURE=true")
         if not (0.05 <= self.prediction_overround_margin <= 0.08):

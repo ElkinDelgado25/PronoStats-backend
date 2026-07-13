@@ -454,7 +454,10 @@ data/
     equipos.csv        # equipos de las ligas principales de America
     goles.csv          # partidos finalizados + programados
 alembic/               # migraciones
-docker-compose.yml     # Postgres opcional
+docker-compose.yml     # Postgres opcional (local; en prod usamos Supabase)
+Dockerfile             # Imagen para Google Cloud Run
+Procfile               # Arranque web en Render
 .env.example           # Plantilla de variables de entorno
+.env.production.example # Plantilla env de produccion (Cloud Run / Render)
 requirements.txt       # Dependencias Python
 ```
