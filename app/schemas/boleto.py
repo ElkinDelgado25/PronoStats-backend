@@ -68,6 +68,14 @@ class StripeConfirmOut(BaseModel):
     mensaje: str
 
 
+class StripeStatusOut(BaseModel):
+    configurado: bool
+    webhook_configurado: bool
+    confirm_fallback: bool
+    moneda: str
+    deposito_minimo: float
+
+
 class RecargaIn(BaseModel):
     """Solicitud de recarga desde la pantalla de cartera."""
 

@@ -11,6 +11,7 @@ from app.schemas.boleto import (
     StripeCheckoutOut,
     StripeConfirmIn,
     StripeConfirmOut,
+    StripeStatusOut,
 )
 from app.services.stripe_payments import (
     confirmar_sesion_checkout,
@@ -122,15 +123,15 @@ def confirmar_pago_stripe(
     )
 
 
-@router.get("/wallet/stripe/status")
-def estado_stripe() -> dict[str, bool | str]:
-    return {
-        "configurado": settings.stripe_enabled,
-        "webhook_configurado": bool(settings.stripe_webhook_secret),
-        "confirm_fallback": settings.stripe_confirm_fallback_enabled,
-        "moneda": settings.stripe_currency,
-        "deposito_minimo": settings.stripe_min_deposit,
-    }
+@router.get("/wallet/stripe/status", response_model=StripeStatusOut)
+def estado_stripe() -> StripeStatusOut:
+    return StripeStatusOut(
+        configurado=settings.stripe_enabled,
+        webhook_configurado=bool(settings.stripe_webhook_secret),
+        confirm_fallback=settings.stripe_confirm_fallback_enabled,
+        moneda=settings.stripe_currency,
+        deposito_minimo=settings.stripe_min_deposit,
+    )
 
 
 @router.post("/wallet/stripe/webhook")
