@@ -18,7 +18,7 @@ from app.services.combinadas import (
     calcular_combinada,
     normalizar_seleccion,
 )
-from app.services.wallet import acreditar_premio, debitar_apuesta
+from app.services.wallet import acreditar_premio, debitar_apuesta, obtener_o_crear_cartera
 
 
 def _evaluar_seleccion(partido_id: int, categoria: str, seleccion: str) -> bool | None:
@@ -141,7 +141,8 @@ def liquidar_boleto(db: Session, boleto: Boleto) -> Boleto:
     boleto.liquidado_en = datetime.now(timezone.utc)
     boleto.detalle_liquidacion = {"legs": evaluaciones, "sub_ganadoras": sub_wins if tipo == "sistema" else None}
 
-    if boleto.ganancia_real and boleto.ganancia_real > 0:
+    # Solo acredita premio si el boleto fue pagado al crearlo (o via /pagar).
+    if boleto.pagado and boleto.ganancia_real and boleto.ganancia_real > 0:
         usuario = db.get(Usuario, boleto.usuario_id)
         if usuario:
             acreditar_premio(db, usuario, boleto.ganancia_real, boleto.uuid)
@@ -151,8 +152,15 @@ def liquidar_boleto(db: Session, boleto: Boleto) -> Boleto:
     return boleto
 
 
+def crear_boleto(
+    db: Session, usuario: Usuario | None, payload: BoletoCrearIn
+) -> tuple[Boleto, str]:
+    """Crea el boleto.
 
-def crear_boleto(db: Session, usuario: Usuario, payload: BoletoCrearIn) -> Boleto:
+    - Sin sesion: siempre no pagado (cashout / solo codigo), sin usuario.
+    - Con sesion y saldo: debita y marca pagado.
+    - Con sesion sin saldo: no pagado, asociado al usuario.
+    """
     calc_in = CombinadaCalcularIn(
         tipo=payload.tipo,
         selecciones=payload.selecciones,
@@ -163,16 +171,35 @@ def crear_boleto(db: Session, usuario: Usuario, payload: BoletoCrearIn) -> Bolet
     resultado = calcular_combinada(calc_in)
 
     ticket_uuid = str(uuid.uuid4())
-    debitar_apuesta(db, usuario, resultado.valor_total, ticket_uuid)
+    codigo = f"PRN-{ticket_uuid.replace('-', '')[:8].upper()}"
+    pagado = False
+
+    if usuario is None:
+        mensaje = (
+            f"Pronostico generado sin cuenta. Codigo {codigo}. "
+            "Inicia sesion y pagalo desde Historial para participar por el premio."
+        )
+    else:
+        cartera = obtener_o_crear_cartera(db, usuario)
+        if cartera.saldo >= resultado.valor_total:
+            debitar_apuesta(db, usuario, resultado.valor_total, ticket_uuid)
+            pagado = True
+            mensaje = f"Pronostico pagado. Codigo {codigo}."
+        else:
+            mensaje = (
+                f"Saldo insuficiente: se genero el codigo {codigo} sin pagar. "
+                "Recarga tu cartera y pagalo en Historial."
+            )
 
     selecciones_snapshot = [s.model_dump() for s in resultado.selecciones]
     sub_combos = [s.model_dump() for s in resultado.sub_combinaciones] or None
 
     boleto = Boleto(
         uuid=ticket_uuid,
-        usuario_id=usuario.id,
+        usuario_id=usuario.id if usuario else None,
         tipo=resultado.tipo.value,
         estado=EstadoBoleto.pendiente,
+        pagado=pagado,
         importe=payload.importe,
         valor_total=resultado.valor_total,
         cuota_combinada=resultado.cuota_combinada,
@@ -184,6 +211,50 @@ def crear_boleto(db: Session, usuario: Usuario, payload: BoletoCrearIn) -> Bolet
         advertencias=resultado.advertencias,
     )
     db.add(boleto)
+    db.commit()
+    db.refresh(boleto)
+    return boleto, mensaje
+
+
+def reclamar_boletos(db: Session, usuario: Usuario, uuids: list[str]) -> list[Boleto]:
+    """Asocia al usuario boletos guest (sin dueño) por UUID."""
+    reclamados: list[Boleto] = []
+    for ref in uuids:
+        boleto = _buscar_boleto(db, ref)
+        if boleto is None:
+            continue
+        if boleto.usuario_id is None:
+            boleto.usuario_id = usuario.id
+            reclamados.append(boleto)
+        elif boleto.usuario_id != usuario.id:
+            continue
+        else:
+            reclamados.append(boleto)
+    if reclamados:
+        db.commit()
+        for b in reclamados:
+            db.refresh(b)
+    return reclamados
+
+
+def pagar_boleto(db: Session, usuario: Usuario, referencia: str) -> Boleto:
+    """Debita y marca como pagado. Si es guest, lo reclama al usuario."""
+    boleto = _buscar_boleto(db, referencia)
+    if boleto is None:
+        raise HTTPException(status_code=404, detail="Pronostico no encontrado")
+    if boleto.usuario_id is None:
+        boleto.usuario_id = usuario.id
+    elif boleto.usuario_id != usuario.id:
+        raise HTTPException(status_code=403, detail="No puedes pagar este pronostico")
+    if boleto.pagado:
+        raise HTTPException(status_code=400, detail="Este pronostico ya esta pagado")
+    if boleto.estado != EstadoBoleto.pendiente:
+        raise HTTPException(
+            status_code=400,
+            detail="Solo se pueden pagar pronosticos pendientes",
+        )
+    debitar_apuesta(db, usuario, boleto.valor_total, boleto.uuid)
+    boleto.pagado = True
     db.commit()
     db.refresh(boleto)
     return boleto

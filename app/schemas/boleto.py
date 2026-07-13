@@ -15,10 +15,15 @@ class BoletoCrearIn(BaseModel):
     sistema_k: int | None = Field(default=None, ge=2)
 
 
+class BoletoReclamarIn(BaseModel):
+    uuids: list[str] = Field(min_length=1, max_length=50)
+
+
 class BoletoOut(BaseModel):
     uuid: str
     tipo: str
     estado: EstadoBoleto
+    pagado: bool = True
     importe: float
     valor_total: float
     cuota_combinada: float | None
@@ -30,6 +35,7 @@ class BoletoOut(BaseModel):
     detalle_liquidacion: dict | None
     creado_en: datetime
     liquidado_en: datetime | None
+    mensaje: str | None = None
 
     model_config = {"from_attributes": True}
 

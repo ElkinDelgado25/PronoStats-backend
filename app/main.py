@@ -5,6 +5,7 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import inspect, text
 
 from app.api import (
     admin,
@@ -34,6 +35,34 @@ CSRF_PROTECTED_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 DEV_ORIGIN_PATTERN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 
+def _ensure_boleto_schema() -> None:
+    """Asegura columnas/nullability nuevas en boletos (create_all no altera)."""
+    insp = inspect(engine)
+    if "boletos" not in insp.get_table_names():
+        return
+    cols = {c["name"]: c for c in insp.get_columns("boletos")}
+    with engine.begin() as conn:
+        if "pagado" not in cols:
+            if engine.dialect.name == "postgresql":
+                conn.execute(
+                    text(
+                        "ALTER TABLE boletos "
+                        "ADD COLUMN pagado BOOLEAN NOT NULL DEFAULT TRUE"
+                    )
+                )
+            else:
+                conn.execute(
+                    text(
+                        "ALTER TABLE boletos "
+                        "ADD COLUMN pagado BOOLEAN NOT NULL DEFAULT 1"
+                    )
+                )
+        # Permitir boletos guest sin usuario.
+        if engine.dialect.name == "postgresql":
+            conn.execute(text("ALTER TABLE boletos ALTER COLUMN usuario_id DROP NOT NULL"))
+        # SQLite no soporta DROP NOT NULL de forma simple; tablas nuevas ya son nullable.
+
+
 def _origin_from_request(request: Request) -> str | None:
     origin = request.headers.get("origin")
     if origin:
@@ -60,6 +89,7 @@ def _is_allowed_origin(origin: str) -> bool:
 async def lifespan(app: FastAPI):
     # Tablas de la BD (usuarios/auth). En produccion usar Alembic.
     Base.metadata.create_all(bind=engine)
+    _ensure_boleto_schema()
     # Relee los datasets CSV (data/dataset_futbol/) en CADA arranque y
     # recalcula pronosticos y metricas. Los datos de negocio NO se persisten
     # en la BD: viven en memoria y provienen exclusivamente de los CSV.

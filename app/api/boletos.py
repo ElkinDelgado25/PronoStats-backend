@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_current_user_optional
 from app.db.session import get_db
 from app.models.boleto import Boleto, EstadoBoleto
 from app.models.cartera import MetodoPago
@@ -15,6 +15,7 @@ from app.schemas.boleto import (
     BoletoConsultaOut,
     BoletoCrearIn,
     BoletoOut,
+    BoletoReclamarIn,
     CarteraOut,
     DepositoIn,
     MovimientoOut,
@@ -26,6 +27,8 @@ from app.services.boletos import (
     crear_boleto,
     liquidar_pendientes,
     listar_boletos_usuario,
+    pagar_boleto,
+    reclamar_boletos,
 )
 from app.services.wallet import depositar, obtener_o_crear_cartera
 
@@ -89,11 +92,12 @@ def ingresar_fondos(
 def emitir_boleto(
     payload: BoletoCrearIn,
     db: Session = Depends(get_db),
-    current_user: Usuario = Depends(get_current_user),
+    current_user: Usuario | None = Depends(get_current_user_optional),
 ) -> BoletoOut:
-    """Crea un boleto con UUID, descuenta saldo y guarda el cupon."""
-    boleto = crear_boleto(db, current_user, payload)
-    return boleto_a_out(boleto)
+    """Crea un boleto. Sin sesion queda no pagado; con saldo se cobra."""
+    boleto, mensaje = crear_boleto(db, current_user, payload)
+    out = boleto_a_out(boleto)
+    return out.model_copy(update={"mensaje": mensaje})
 
 
 @router.get("/boletos", response_model=list[BoletoOut])
@@ -103,12 +107,42 @@ def mis_boletos(
     return [boleto_a_out(b) for b in listar_boletos_usuario(db, current_user.id)]
 
 
+@router.post("/boletos/reclamar", response_model=list[BoletoOut])
+def reclamar_boletos_endpoint(
+    payload: BoletoReclamarIn,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+) -> list[BoletoOut]:
+    """Vincula pronosticos guest (sin cuenta) al usuario logueado."""
+    boletos = reclamar_boletos(db, current_user, payload.uuids)
+    return [boleto_a_out(b) for b in boletos]
+
+
+@router.post("/boletos/{ticket_uuid}/pagar", response_model=BoletoOut)
+def pagar_boleto_endpoint(
+    ticket_uuid: str,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+) -> BoletoOut:
+    """Paga un pronostico no pagado debitando la cartera."""
+    boleto = pagar_boleto(db, current_user, ticket_uuid)
+    out = boleto_a_out(boleto)
+    return out.model_copy(
+        update={"mensaje": "Pronostico pagado. Ya participa por el premio."}
+    )
+
+
 @router.get("/boletos/consulta/{ticket_uuid}", response_model=BoletoConsultaOut)
 def consulta_boleto(ticket_uuid: str, db: Session = Depends(get_db)) -> BoletoConsultaOut:
     """Consulta publica por UUID: pendiente, ganado o perdido."""
     boleto = consultar_boleto(db, ticket_uuid)
     out = boleto_a_consulta(boleto)
-    out.mensaje_estado = _MENSAJES_ESTADO.get(boleto.estado, "")
+    base = _MENSAJES_ESTADO.get(boleto.estado, "")
+    if not boleto.pagado:
+        extra = " Este pronostico no esta pagado: no participa por premio hasta que lo pagues."
+        out.mensaje_estado = (base + extra).strip()
+    else:
+        out.mensaje_estado = base
     return out
 
 

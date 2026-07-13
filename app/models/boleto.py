@@ -2,7 +2,7 @@ import enum
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import JSON, DateTime, Enum, Float, ForeignKey, Integer, String
+from sqlalchemy import JSON, Boolean, DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -24,11 +24,16 @@ class Boleto(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     uuid: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
-    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"), index=True)
+    # Nullable: pronosticos generados sin sesion (guest / cashout).
+    usuario_id: Mapped[int | None] = mapped_column(
+        ForeignKey("usuarios.id"), index=True, nullable=True
+    )
     tipo: Mapped[str] = mapped_column(String(20), nullable=False)
     estado: Mapped[EstadoBoleto] = mapped_column(
         Enum(EstadoBoleto), default=EstadoBoleto.pendiente, nullable=False
     )
+    # True si se debito la cartera al crear; False = solo codigo / consulta.
+    pagado: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     importe: Mapped[float] = mapped_column(Float, nullable=False)
     valor_total: Mapped[float] = mapped_column(Float, nullable=False)
     cuota_combinada: Mapped[float | None] = mapped_column(Float, nullable=True)
@@ -45,4 +50,4 @@ class Boleto(Base):
     )
     liquidado_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    usuario: Mapped["Usuario"] = relationship(back_populates="boletos")
+    usuario: Mapped["Usuario | None"] = relationship(back_populates="boletos")

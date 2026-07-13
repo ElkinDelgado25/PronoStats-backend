@@ -53,6 +53,26 @@ def get_current_user(
     return usuario
 
 
+def get_current_user_optional(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+    db: Session = Depends(get_db),
+) -> Usuario | None:
+    """Devuelve el usuario si hay cookie/token valido; si no, None."""
+    token = _extract_token(request, credentials)
+    if not token:
+        return None
+    try:
+        payload = decode_access_token(token)
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+        user_id_int = int(user_id)
+    except (jwt.PyJWTError, TypeError, ValueError):
+        return None
+    return db.get(Usuario, user_id_int)
+
+
 def require_admin(current_user: Usuario = Depends(get_current_user)) -> Usuario:
     if current_user.rol != RolUsuario.admin:
         raise HTTPException(
