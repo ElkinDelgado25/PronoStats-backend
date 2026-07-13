@@ -55,11 +55,15 @@ def get_current_user(
 
 def get_current_user_optional(
     request: Request,
-    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
     db: Session = Depends(get_db),
 ) -> Usuario | None:
-    """Devuelve el usuario si hay cookie/token valido; si no, None."""
-    token = _extract_token(request, credentials)
+    """Usuario si hay cookie/token valido; si no, None (sin exigir auth en OpenAPI)."""
+    token = request.cookies.get(settings.jwt_cookie_name)
+    if not token:
+        auth = request.headers.get("Authorization") or ""
+        scheme, _, param = auth.partition(" ")
+        if scheme.lower() == "bearer" and param.strip():
+            token = param.strip()
     if not token:
         return None
     try:

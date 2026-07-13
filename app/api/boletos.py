@@ -94,7 +94,7 @@ def emitir_boleto(
     db: Session = Depends(get_db),
     current_user: Usuario | None = Depends(get_current_user_optional),
 ) -> BoletoOut:
-    """Crea un boleto. Sin sesion queda no pagado; con saldo se cobra."""
+    """Publico: sin sesion crea codigo pendiente; con sesion paga si hay saldo."""
     boleto, mensaje = crear_boleto(db, current_user, payload)
     out = boleto_a_out(boleto)
     return out.model_copy(update={"mensaje": mensaje})

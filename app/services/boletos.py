@@ -157,9 +157,9 @@ def crear_boleto(
 ) -> tuple[Boleto, str]:
     """Crea el boleto.
 
-    - Sin sesion: siempre no pagado (cashout / solo codigo), sin usuario.
-    - Con sesion y saldo: debita y marca pagado.
-    - Con sesion sin saldo: no pagado, asociado al usuario.
+    - Sin sesion: codigo con estado pendiente, no pagado.
+    - Con sesion y saldo: debita, pagado=True, estado pendiente (en juego).
+    - Con sesion sin saldo: solo codigo, pendiente y no pagado.
     """
     calc_in = CombinadaCalcularIn(
         tipo=payload.tipo,
@@ -176,8 +176,8 @@ def crear_boleto(
 
     if usuario is None:
         mensaje = (
-            f"Pronostico generado sin cuenta. Codigo {codigo}. "
-            "Inicia sesion y pagalo desde Historial para participar por el premio."
+            f"Codigo {codigo} generado con estado pendiente. "
+            "Inicia sesion para pagarlo y participar por el premio."
         )
     else:
         cartera = obtener_o_crear_cartera(db, usuario)
@@ -187,7 +187,7 @@ def crear_boleto(
             mensaje = f"Pronostico pagado. Codigo {codigo}."
         else:
             mensaje = (
-                f"Saldo insuficiente: se genero el codigo {codigo} sin pagar. "
+                f"Sin fondos suficientes: codigo {codigo} en estado pendiente. "
                 "Recarga tu cartera y pagalo en Historial."
             )
 

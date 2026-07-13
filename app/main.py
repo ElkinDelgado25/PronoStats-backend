@@ -37,30 +37,36 @@ DEV_ORIGIN_PATTERN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 def _ensure_boleto_schema() -> None:
     """Asegura columnas/nullability nuevas en boletos (create_all no altera)."""
-    insp = inspect(engine)
-    if "boletos" not in insp.get_table_names():
-        return
-    cols = {c["name"]: c for c in insp.get_columns("boletos")}
-    with engine.begin() as conn:
-        if "pagado" not in cols:
+    try:
+        insp = inspect(engine)
+        if "boletos" not in insp.get_table_names():
+            return
+        cols = {c["name"]: c for c in insp.get_columns("boletos")}
+        with engine.begin() as conn:
+            if engine.dialect.name == "postgresql":
+                conn.execute(text("SET LOCAL lock_timeout = '3s'"))
+            if "pagado" not in cols:
+                if engine.dialect.name == "postgresql":
+                    conn.execute(
+                        text(
+                            "ALTER TABLE boletos "
+                            "ADD COLUMN IF NOT EXISTS pagado BOOLEAN NOT NULL DEFAULT TRUE"
+                        )
+                    )
+                else:
+                    conn.execute(
+                        text(
+                            "ALTER TABLE boletos "
+                            "ADD COLUMN pagado BOOLEAN NOT NULL DEFAULT 1"
+                        )
+                    )
+            # Permitir boletos guest sin usuario.
             if engine.dialect.name == "postgresql":
                 conn.execute(
-                    text(
-                        "ALTER TABLE boletos "
-                        "ADD COLUMN pagado BOOLEAN NOT NULL DEFAULT TRUE"
-                    )
+                    text("ALTER TABLE boletos ALTER COLUMN usuario_id DROP NOT NULL")
                 )
-            else:
-                conn.execute(
-                    text(
-                        "ALTER TABLE boletos "
-                        "ADD COLUMN pagado BOOLEAN NOT NULL DEFAULT 1"
-                    )
-                )
-        # Permitir boletos guest sin usuario.
-        if engine.dialect.name == "postgresql":
-            conn.execute(text("ALTER TABLE boletos ALTER COLUMN usuario_id DROP NOT NULL"))
-        # SQLite no soporta DROP NOT NULL de forma simple; tablas nuevas ya son nullable.
+    except Exception as exc:  # noqa: BLE001
+        print(f"[schema] No se pudo asegurar boletos.pagado/usuario_id: {exc}", flush=True)
 
 
 def _origin_from_request(request: Request) -> str | None:
