@@ -102,6 +102,7 @@ class MovimientoOut(BaseModel):
     saldo_despues: float
     descripcion: str
     metodo_pago: str | None
+    referencia_externa: str | None
     boleto_uuid: str | None
     creado_en: datetime
 

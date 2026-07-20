@@ -110,7 +110,15 @@ class Settings(BaseSettings):
 
     @property
     def stripe_confirm_fallback_enabled(self) -> bool:
-        return not self.is_production and self.stripe_allow_confirm_fallback
+        """Permite confirmar el retorno de Checkout solo con una clave de pruebas.
+
+        El webhook es el mecanismo principal en produccion. El fallback existe
+        para que el sandbox de Stripe siga siendo recuperable si el webhook se
+        retrasa, pero nunca debe habilitarse para cobros reales.
+        """
+        if not self.stripe_allow_confirm_fallback:
+            return False
+        return not self.is_production or self.stripe_secret_key.startswith("sk_test_")
 
 
 @lru_cache
