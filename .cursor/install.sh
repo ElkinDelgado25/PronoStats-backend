@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # Idempotent Cloud Agent bootstrap for the PronoStats FastAPI backend.
 # Safe to run repeatedly: it refreshes the virtualenv/dependencies, ensures a
-# local dev .env exists, and seeds the SQLite database with demo data.
+# local dev .env exists, and seeds an ISOLATED local SQLite database.
+#
+# IMPORTANT: Cloud Agent secrets (DATABASE_URL, ENVIRONMENT, ...) are injected as
+# OS env vars and take precedence over .env in pydantic-settings. To keep the dev
+# environment from ever touching the injected remote database, all DB work below
+# runs with the local-dev overrides in .cursor/dev-overrides.sh and is guarded so
+# the destructive seed only ever runs against local SQLite.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -30,7 +36,8 @@ fi
 ./.venv/bin/python -m pip install -r requirements.txt
 
 # 3) Local development .env (only created if missing so it is never overwritten).
-#    Defaults keep the app on local SQLite; JWT_SECRET is generated once.
+#    Provides a fallback JWT_SECRET when none is injected; DB/env are forced to
+#    local dev values at runtime via .cursor/dev-overrides.sh.
 if [ ! -f ".env" ]; then
   DEV_JWT_SECRET="$(./.venv/bin/python -c 'import secrets; print(secrets.token_hex(32))')"
   cat > .env <<EOF
@@ -48,7 +55,28 @@ else
   echo "[install] Existing .env kept as-is."
 fi
 
-# 4) Seed the local database with demo users and sample data.
-./.venv/bin/python -m app.seed
+# 4) Seed an ISOLATED local SQLite database with demo users and sample data.
+#    Force local-dev config, then hard-guard: refuse to seed anything that is not
+#    local SQLite so an injected remote DATABASE_URL can never be wiped.
+# shellcheck disable=SC1091
+source .cursor/dev-overrides.sh
+
+EFFECTIVE_DB="$(./.venv/bin/python - <<'PY'
+from app.core.config import settings
+print(settings.effective_database_url)
+PY
+)"
+
+case "$EFFECTIVE_DB" in
+  sqlite:*)
+    echo "[install] Seeding local SQLite database (${EFFECTIVE_DB})."
+    ./.venv/bin/python -m app.seed
+    ;;
+  *)
+    echo "[install] SAFETY ABORT: effective database is not local SQLite." >&2
+    echo "[install] Refusing to run the destructive seed against: ${EFFECTIVE_DB%%@*}@<redacted>" >&2
+    exit 1
+    ;;
+esac
 
 echo "[install] PronoStats backend environment is ready."
