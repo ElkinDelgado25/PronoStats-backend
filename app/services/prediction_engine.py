@@ -36,14 +36,19 @@ def compute_prediction(
         model_version = settings.prediction_model_version
 
     data = compute_match_result(forma_local, forma_visitante, home_advantage, model_version)
-    
+
     margin = settings.prediction_overround_margin
-    prob_local = round(min(max(data.prob_local * (1.0 + margin), 0.01), 0.99), 4)
-    prob_empate = round(min(max(data.prob_empate * (1.0 + margin), 0.01), 0.99), 4)
-    prob_visitante = round(min(max(data.prob_visitante * (1.0 + margin), 0.01), 0.99), 4)
-    
-    probs = {"local": prob_local, "empate": prob_empate, "visitante": prob_visitante}
-    confianza = probs.get(data.pronostico, data.confianza)
+    # Overround comercial: probs implicadas suman ~1+margin (para acortar cuotas).
+    # La confianza se reporta sobre la probabilidad justa.
+    fair = {
+        "local": data.prob_local,
+        "empate": data.prob_empate,
+        "visitante": data.prob_visitante,
+    }
+    prob_local = round(max(data.prob_local, 1e-9) * (1.0 + margin), 4)
+    prob_empate = round(max(data.prob_empate, 1e-9) * (1.0 + margin), 4)
+    prob_visitante = round(max(data.prob_visitante, 1e-9) * (1.0 + margin), 4)
+    confianza = round(fair.get(data.pronostico, data.confianza), 4)
 
     return PredictionResult(
         prob_local=prob_local,

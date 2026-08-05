@@ -2,7 +2,7 @@ import enum
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, String, Text
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -46,6 +46,12 @@ class Cartera(Base):
 
 class MovimientoCartera(Base):
     __tablename__ = "movimientos_cartera"
+    __table_args__ = (
+        UniqueConstraint(
+            "referencia_externa",
+            name="uq_movimientos_cartera_referencia_externa",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     cartera_id: Mapped[int] = mapped_column(ForeignKey("carteras.id"), index=True)
@@ -55,7 +61,7 @@ class MovimientoCartera(Base):
     descripcion: Mapped[str] = mapped_column(String(255), nullable=False)
     metodo_pago: Mapped[MetodoPago | None] = mapped_column(Enum(MetodoPago), nullable=True)
     referencia_externa: Mapped[str | None] = mapped_column(String(120), nullable=True)
-    boleto_uuid: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    boleto_uuid: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     creado_en: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
