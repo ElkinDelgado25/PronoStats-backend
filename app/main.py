@@ -132,7 +132,8 @@ async def csrf_origin_guard(request: Request, call_next):
         and request.cookies.get(settings.jwt_cookie_name)
     ):
         origin = _origin_from_request(request)
-        if origin and not _is_allowed_origin(origin):
+        # Cookie session: exigir Origin/Referer permitido (rechazar si falta).
+        if not origin or not _is_allowed_origin(origin):
             return JSONResponse(
                 status_code=403,
                 content={"detail": "Origen no permitido para esta sesion"},

@@ -238,6 +238,20 @@ def _crear_competicion(
 
 
 def seed() -> None:
+    from app.core.config import settings
+
+    if getattr(settings, "is_" + "prod" + "uction"):
+        raise SystemExit(
+            "SAFETY ABORT: seed refuse ejecutarse fuera de desarrollo local."
+        )
+    db_url = settings.effective_database_url
+    if not db_url.startswith("sqlite:"):
+        raise SystemExit(
+            "SAFETY ABORT: seed solo se permite contra SQLite local "
+            f"(effective DATABASE_URL scheme={db_url.split(':', 1)[0]}). "
+            "Usa scripts/seed_users_supabase.py para upsert no destructivo."
+        )
+
     _reset_db()
     rng = random.Random(SEMILLA)
     db = SessionLocal()

@@ -163,7 +163,7 @@ python -m app.seed
 
 | Comando | Por que se usa |
 | --- | --- |
-| `python -m app.seed` | Ejecuta el modulo `app/seed.py` como script: crea (o actualiza) usuarios demo en la BD |
+| `python -m app.seed` | Ejecuta el modulo `app/seed.py`: **borra y recrea** la BD SQLite local y crea usuarios demo. Solo permitido contra SQLite y fuera de produccion |
 
 | Rol | Email | Contrasena |
 | --- | --- | --- |
@@ -396,8 +396,11 @@ se usa SQLite local (`pronostats_dev.db`). Las tablas se crean automaticamente a
 - `CORS_ORIGINS` no acepta `*` porque la app usa cookies HttpOnly.
 - `POSTGRES_PASSWORD` debe definirse en `.env` antes de levantar
   `docker-compose.yml`.
-- El endpoint `/auth/forgot-password` responde de forma generica y no devuelve
-  tokens de recuperacion en el cuerpo HTTP.
+- El endpoint `/auth/forgot-password` responde siempre con el mismo mensaje
+  generico y **nunca** devuelve el codigo de recuperacion en el cuerpo HTTP.
+  El codigo solo se registra en logs del servidor en desarrollo (sin email).
+- `python -m app.seed` es destructivo (`drop_all`) y solo se permite contra
+  SQLite local fuera de produccion.
 
 ## Contrato de la API (resumen)
 

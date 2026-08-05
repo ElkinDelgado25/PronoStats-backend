@@ -44,25 +44,28 @@ class AgentResult:
 
 
 def apply_overround(result: AgentResult, margin: float) -> AgentResult:
-    """Aplica el margen comercial (overround) a las probabilidades de una prediccion.
+    """Aplica margen comercial (overround) a probs usadas para cuotas.
 
-    Aumenta las probabilidades individuales por (1 + overround) y las clampa entre 0.01 y 0.99.
-    Mantiene la probabilidad implicita relativa y recalcula la confianza del pronostico.
+    Las probs resultantes suman aprox. (1 + margin): es intencional (libro).
+    La confianza del pronostico se conserva sobre la probabilidad justa (pre-margen).
     """
-    adjusted_probs = {}
-    for key, val in result.probabilidades.items():
-        adjusted_val = val * (1.0 + margin)
-        adjusted_probs[key] = round(min(max(adjusted_val, 0.01), 0.99), 4)
+    if not result.probabilidades:
+        return result
 
-    adjusted_confianza = result.confianza
-    if result.pronostico in adjusted_probs:
-        adjusted_confianza = adjusted_probs[result.pronostico]
+    adjusted_probs = {
+        key: round(max(val, 1e-9) * (1.0 + margin), 4)
+        for key, val in result.probabilidades.items()
+    }
+
+    fair = result.probabilidades
+    if result.pronostico in fair:
+        adjusted_confianza = round(fair[result.pronostico], 4)
     else:
         normalized_pick = result.pronostico.replace(".", "_")
-        if normalized_pick in adjusted_probs:
-            adjusted_confianza = adjusted_probs[normalized_pick]
+        if normalized_pick in fair:
+            adjusted_confianza = round(fair[normalized_pick], 4)
         else:
-            adjusted_confianza = round(min(max(result.confianza * (1.0 + margin), 0.01), 0.99), 4)
+            adjusted_confianza = round(min(max(result.confianza, 0.01), 0.99), 4)
 
     return AgentResult(
         categoria=result.categoria,

@@ -3,13 +3,13 @@ from __future__ import annotations
 import stripe
 from fastapi import HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.models.cartera import MovimientoCartera
+from app.models.cartera import MetodoPago, MovimientoCartera
 from app.models.usuario import Usuario
 from app.services.wallet import depositar
-from app.models.cartera import MetodoPago
 
 stripe.api_key = settings.stripe_secret_key or None
 
@@ -78,13 +78,20 @@ def acreditar_deposito_stripe(
     if usuario is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado para el pago")
 
-    return depositar(
-        db,
-        usuario,
-        monto,
-        metodo=MetodoPago.stripe,
-        referencia_externa=session_id,
-    )
+    try:
+        return depositar(
+            db,
+            usuario,
+            monto,
+            metodo=MetodoPago.stripe,
+            referencia_externa=session_id,
+        )
+    except IntegrityError:
+        db.rollback()
+        existente = _movimiento_por_sesion(db, session_id)
+        if existente is not None:
+            return existente
+        raise
 
 
 def _acreditar_desde_checkout_session(
@@ -99,9 +106,20 @@ def _acreditar_desde_checkout_session(
 
     metadata = session.metadata or {}
     usuario_id = int(metadata.get("usuario_id", "0"))
-    monto = float(metadata.get("monto", "0"))
-    if usuario_id <= 0 or monto <= 0:
+    if usuario_id <= 0:
         raise HTTPException(status_code=400, detail="Metadata de pago incompleta")
+
+    # Monto autoritativo: lo cobrado por Stripe (centavos), no la metadata editable.
+    if session.amount_total is None or session.amount_total <= 0:
+        raise HTTPException(status_code=400, detail="Monto de sesion Stripe invalido")
+    monto = round(session.amount_total / 100.0, 2)
+
+    metadata_monto = float(metadata.get("monto", "0") or "0")
+    if metadata_monto > 0 and abs(metadata_monto - monto) > 0.01:
+        raise HTTPException(
+            status_code=400,
+            detail="El monto cobrado no coincide con la metadata de la sesion",
+        )
 
     return acreditar_deposito_stripe(
         db,

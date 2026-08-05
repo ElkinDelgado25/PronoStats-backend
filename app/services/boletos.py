@@ -50,15 +50,9 @@ def _evaluar_seleccion(partido_id: int, categoria: str, seleccion: str) -> bool 
         line = float(sel.replace("over_", "").replace("under_", "").replace("_", "."))
         over = total > line
         return over if sel.startswith("over_") else not over
-    if cat == "first_scorer":
-        if sel == "sin_goles":
-            return total == 0
-        if sel == "local":
-            return gl > 0 and (gv == 0 or gl <= gv)  # aproximacion sin minuto
-        if sel == "visitante":
-            return gv > 0 and (gl == 0 or gv < gl)
-    if cat == "goal_timing":
-        return None  # sin minutos reales no liquidamos este mercado
+    if cat in {"first_scorer", "goal_timing"}:
+        # Sin datos de minuto no se puede liquidar de forma fiable.
+        return None
     return None
 
 
@@ -67,6 +61,13 @@ def _legs_from_boleto(boleto: Boleto) -> list[dict]:
 
 
 def liquidar_boleto(db: Session, boleto: Boleto) -> Boleto:
+    # Bloquea la fila para evitar liquidaciones concurrentes / doble premio.
+    locked = db.execute(
+        select(Boleto).where(Boleto.id == boleto.id).with_for_update()
+    ).scalar_one_or_none()
+    if locked is None:
+        return boleto
+    boleto = locked
     if boleto.estado != EstadoBoleto.pendiente:
         return boleto
 
@@ -139,13 +140,18 @@ def liquidar_boleto(db: Session, boleto: Boleto) -> Boleto:
     boleto.estado = estado
     boleto.ganancia_real = round(ganancia, 2) if ganancia > 0 else 0.0
     boleto.liquidado_en = datetime.now(timezone.utc)
-    boleto.detalle_liquidacion = {"legs": evaluaciones, "sub_ganadoras": sub_wins if tipo == "sistema" else None}
+    boleto.detalle_liquidacion = {
+        "legs": evaluaciones,
+        "sub_ganadoras": sub_wins if tipo == "sistema" else None,
+    }
 
     # Solo acredita premio si el boleto fue pagado al crearlo (o via /pagar).
-    if boleto.pagado and boleto.ganancia_real and boleto.ganancia_real > 0:
+    if boleto.pagado and boleto.ganancia_real and boleto.ganancia_real > 0 and boleto.usuario_id:
         usuario = db.get(Usuario, boleto.usuario_id)
         if usuario:
-            acreditar_premio(db, usuario, boleto.ganancia_real, boleto.uuid)
+            acreditar_premio(
+                db, usuario, boleto.ganancia_real, boleto.uuid, commit=False
+            )
 
     db.commit()
     db.refresh(boleto)
@@ -180,9 +186,11 @@ def crear_boleto(
             "Inicia sesion para pagarlo y participar por el premio."
         )
     else:
-        cartera = obtener_o_crear_cartera(db, usuario)
+        cartera = obtener_o_crear_cartera(db, usuario, for_update=True, commit=False)
         if cartera.saldo >= resultado.valor_total:
-            debitar_apuesta(db, usuario, resultado.valor_total, ticket_uuid)
+            debitar_apuesta(
+                db, usuario, resultado.valor_total, ticket_uuid, commit=False
+            )
             pagado = True
             mensaje = f"Pronostico pagado. Codigo {codigo}."
         else:
@@ -242,6 +250,9 @@ def pagar_boleto(db: Session, usuario: Usuario, referencia: str) -> Boleto:
     boleto = _buscar_boleto(db, referencia)
     if boleto is None:
         raise HTTPException(status_code=404, detail="Pronostico no encontrado")
+    boleto = db.execute(
+        select(Boleto).where(Boleto.id == boleto.id).with_for_update()
+    ).scalar_one()
     if boleto.usuario_id is None:
         boleto.usuario_id = usuario.id
     elif boleto.usuario_id != usuario.id:
@@ -253,7 +264,7 @@ def pagar_boleto(db: Session, usuario: Usuario, referencia: str) -> Boleto:
             status_code=400,
             detail="Solo se pueden pagar pronosticos pendientes",
         )
-    debitar_apuesta(db, usuario, boleto.valor_total, boleto.uuid)
+    debitar_apuesta(db, usuario, boleto.valor_total, boleto.uuid, commit=False)
     boleto.pagado = True
     db.commit()
     db.refresh(boleto)
@@ -261,20 +272,23 @@ def pagar_boleto(db: Session, usuario: Usuario, referencia: str) -> Boleto:
 
 
 def _buscar_boleto(db: Session, referencia: str) -> Boleto | None:
+    """Busca por UUID exacto o codigo PRN-XXXXXXXX completo (8 hex). Sin prefijos cortos."""
     ref = referencia.strip()
     if not ref:
         return None
     exacto = db.execute(select(Boleto).where(Boleto.uuid == ref)).scalar_one_or_none()
     if exacto:
         return exacto
-    prefijo = ref.upper().removeprefix("PRN-").replace("-", "")
-    if len(prefijo) < 4:
+    codigo = ref.upper()
+    if not codigo.startswith("PRN-"):
         return None
-    candidatos = db.execute(select(Boleto)).scalars().all()
-    for b in candidatos:
-        if b.uuid.replace("-", "").upper().startswith(prefijo):
-            return b
-    return None
+    hex_part = codigo.removeprefix("PRN-").replace("-", "")
+    if len(hex_part) != 8 or any(c not in "0123456789ABCDEF" for c in hex_part):
+        return None
+    # El codigo se genera como PRN- + primeros 8 hex del UUID sin guiones.
+    return db.execute(
+        select(Boleto).where(Boleto.uuid.like(f"{hex_part.lower()}%"))
+    ).scalar_one_or_none()
 
 
 def consultar_boleto(db: Session, referencia: str) -> Boleto:

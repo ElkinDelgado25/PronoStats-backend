@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user, get_current_user_optional
+from app.api.deps import get_current_user, get_current_user_optional, require_admin
 from app.db.session import get_db
 from app.models.boleto import Boleto, EstadoBoleto
 from app.models.cartera import MetodoPago
@@ -147,7 +147,10 @@ def consulta_boleto(ticket_uuid: str, db: Session = Depends(get_db)) -> BoletoCo
 
 
 @router.post("/boletos/liquidar-pendientes")
-def liquidar_todos(db: Session = Depends(get_db)) -> dict:
-    """Recalcula boletos pendientes (util cuando finalizan partidos)."""
+def liquidar_todos(
+    db: Session = Depends(get_db),
+    _: Usuario = Depends(require_admin),
+) -> dict:
+    """Recalcula boletos pendientes. Solo administradores (o un job interno)."""
     n = liquidar_pendientes(db)
     return {"liquidados": n}

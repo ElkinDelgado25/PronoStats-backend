@@ -6,7 +6,7 @@ from app.models.usuario import RolUsuario
 class RegistroRequest(BaseModel):
     email: EmailStr
     nombre: str = Field(min_length=2, max_length=120)
-    password: str = Field(min_length=8, max_length=128)
+    password: str = Field(min_length=8, max_length=72)
 
     @field_validator("email")
     @classmethod
@@ -30,7 +30,7 @@ class RegistroRequest(BaseModel):
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=1, max_length=128)
+    password: str = Field(min_length=1, max_length=72)
 
     @field_validator("email")
     @classmethod
@@ -72,8 +72,9 @@ class ForgotPasswordRequest(BaseModel):
 
 
 class ForgotPasswordResponse(BaseModel):
+    """Respuesta generica: nunca incluye el codigo de verificacion."""
+
     mensaje: str
-    codigo_verificacion: str | None = None
 
 
 class VerifyResetCodeRequest(BaseModel):
@@ -94,7 +95,7 @@ class VerifyResetCodeResponse(BaseModel):
 class ResetPasswordRequest(BaseModel):
     email: EmailStr
     codigo: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
-    password: str = Field(min_length=8, max_length=128)
+    password: str = Field(min_length=8, max_length=72)
 
     @field_validator("email")
     @classmethod
