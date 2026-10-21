@@ -1,0 +1,11 @@
+{
+  "name": "PronoStats backend",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "api",
+      "command": "source .cursor/dev-overrides.sh && .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    }
+  ],
+  "ports": [{ "name": "api", "port": 8000 }]
+}
